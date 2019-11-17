@@ -39,6 +39,12 @@
 
 //#define LOBOT_DEBUG 1  /*Debug ：print debug value*/
 
+// Define servo IDs
+#define ID1 1
+#define ID2 2
+#define ID3 3
+#define ID4 4
+
 // SoftwareSerial for servo
 SoftwareSerial serial_servo(10, 11);
 
@@ -364,11 +370,6 @@ void setup()
   serial_servo.begin(115200);
   delay(1000);
 }
-
-#define ID1 1
-#define ID2 2
-#define ID3 3
-#define ID4 4
 
 void loop()
 {
