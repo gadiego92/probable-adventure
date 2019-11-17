@@ -7,37 +7,37 @@
 #define BYTE_TO_HW(A, B) ((((uint16_t)(A)) << 8) | (uint8_t)(B))
 //put A as higher 8 bits   B as lower 8 bits   which amalgamated into 16 bits integer
 
-#define LOBOT_SERVO_FRAME_HEADER         0x55
-#define LOBOT_SERVO_MOVE_TIME_WRITE      1
-#define LOBOT_SERVO_MOVE_TIME_READ       2
-#define LOBOT_SERVO_MOVE_TIME_WAIT_WRITE 7
-#define LOBOT_SERVO_MOVE_TIME_WAIT_READ  8
-#define LOBOT_SERVO_MOVE_START           11
-#define LOBOT_SERVO_MOVE_STOP            12
-#define LOBOT_SERVO_ID_WRITE             13
-#define LOBOT_SERVO_ID_READ              14
-#define LOBOT_SERVO_ANGLE_OFFSET_ADJUST  17
-#define LOBOT_SERVO_ANGLE_OFFSET_WRITE   18
-#define LOBOT_SERVO_ANGLE_OFFSET_READ    19
-#define LOBOT_SERVO_ANGLE_LIMIT_WRITE    20
-#define LOBOT_SERVO_ANGLE_LIMIT_READ     21
-#define LOBOT_SERVO_VIN_LIMIT_WRITE      22
-#define LOBOT_SERVO_VIN_LIMIT_READ       23
-#define LOBOT_SERVO_TEMP_MAX_LIMIT_WRITE 24
-#define LOBOT_SERVO_TEMP_MAX_LIMIT_READ  25
-#define LOBOT_SERVO_TEMP_READ            26
-#define LOBOT_SERVO_VIN_READ             27
-#define LOBOT_SERVO_POS_READ             28
-#define LOBOT_SERVO_OR_MOTOR_MODE_WRITE  29
-#define LOBOT_SERVO_OR_MOTOR_MODE_READ   30
-#define LOBOT_SERVO_LOAD_OR_UNLOAD_WRITE 31
-#define LOBOT_SERVO_LOAD_OR_UNLOAD_READ  32
-#define LOBOT_SERVO_LED_CTRL_WRITE       33
-#define LOBOT_SERVO_LED_CTRL_READ        34
-#define LOBOT_SERVO_LED_ERROR_WRITE      35
-#define LOBOT_SERVO_LED_ERROR_READ       36
+#define SERVO_FRAME_HEADER         0x55
+#define SERVO_MOVE_TIME_WRITE      1
+#define SERVO_MOVE_TIME_READ       2
+#define SERVO_MOVE_TIME_WAIT_WRITE 7
+#define SERVO_MOVE_TIME_WAIT_READ  8
+#define SERVO_MOVE_START           11
+#define SERVO_MOVE_STOP            12
+#define SERVO_ID_WRITE             13
+#define SERVO_ID_READ              14
+#define SERVO_ANGLE_OFFSET_ADJUST  17
+#define SERVO_ANGLE_OFFSET_WRITE   18
+#define SERVO_ANGLE_OFFSET_READ    19
+#define SERVO_ANGLE_LIMIT_WRITE    20
+#define SERVO_ANGLE_LIMIT_READ     21
+#define SERVO_VIN_LIMIT_WRITE      22
+#define SERVO_VIN_LIMIT_READ       23
+#define SERVO_TEMP_MAX_LIMIT_WRITE 24
+#define SERVO_TEMP_MAX_LIMIT_READ  25
+#define SERVO_TEMP_READ            26
+#define SERVO_VIN_READ             27
+#define SERVO_POS_READ             28
+#define SERVO_OR_MOTOR_MODE_WRITE  29
+#define SERVO_OR_MOTOR_MODE_READ   30
+#define SERVO_LOAD_OR_UNLOAD_WRITE 31
+#define SERVO_LOAD_OR_UNLOAD_READ  32
+#define SERVO_LED_CTRL_WRITE       33
+#define SERVO_LED_CTRL_READ        34
+#define SERVO_LED_ERROR_WRITE      35
+#define SERVO_LED_ERROR_READ       36
 
-//#define LOBOT_DEBUG 1  /*Debug ：print debug value*/
+//#define DEBUG 1  /*Debug ：print debug value*/
 
 // Define servo IDs
 #define ID1 1
@@ -48,7 +48,7 @@
 // SoftwareSerial for servo
 SoftwareSerial serial_servo(10, 11);
 
-byte LobotCheckSum(byte buf[])
+byte CheckSum(byte buf[])
 {
   byte i;
   uint16_t temp = 0;
@@ -62,49 +62,49 @@ byte LobotCheckSum(byte buf[])
 }
 
 // Servo mode
-void LobotSerialServoMove(SoftwareSerial &SerialX, uint8_t id, int16_t position, uint16_t time)
+void SerialServoMove(SoftwareSerial &SerialX, uint8_t id, int16_t position, uint16_t time)
 {
   byte buf[10];
   if (position < 0)
     position = 0;
   if (position > 1000)
     position = 1000;
-  buf[0] = buf[1] = LOBOT_SERVO_FRAME_HEADER;
+  buf[0] = buf[1] = SERVO_FRAME_HEADER;
   buf[2] = id;
   buf[3] = 7;
-  buf[4] = LOBOT_SERVO_MOVE_TIME_WRITE;
+  buf[4] = SERVO_MOVE_TIME_WRITE;
   buf[5] = GET_LOW_BYTE(position);
   buf[6] = GET_HIGH_BYTE(position);
   buf[7] = GET_LOW_BYTE(time);
   buf[8] = GET_HIGH_BYTE(time);
-  buf[9] = LobotCheckSum(buf);
+  buf[9] = CheckSum(buf);
   SerialX.write(buf, 10);
 }
 
-void LobotSerialServoStopMove(SoftwareSerial &SerialX, uint8_t id)
+void SerialServoStopMove(SoftwareSerial &SerialX, uint8_t id)
 {
   byte buf[6];
-  buf[0] = buf[1] = LOBOT_SERVO_FRAME_HEADER;
+  buf[0] = buf[1] = SERVO_FRAME_HEADER;
   buf[2] = id;
   buf[3] = 3;
-  buf[4] = LOBOT_SERVO_MOVE_STOP;
-  buf[5] = LobotCheckSum(buf);
+  buf[4] = SERVO_MOVE_STOP;
+  buf[5] = CheckSum(buf);
   SerialX.write(buf, 6);
 }
 
-void LobotSerialServoSetID(HardwareSerial &SerialX, uint8_t oldID, uint8_t newID)
+void SerialServoSetID(HardwareSerial &SerialX, uint8_t oldID, uint8_t newID)
 {
   byte buf[7];
-  buf[0] = buf[1] = LOBOT_SERVO_FRAME_HEADER;
+  buf[0] = buf[1] = SERVO_FRAME_HEADER;
   buf[2] = oldID;
   buf[3] = 4;
-  buf[4] = LOBOT_SERVO_ID_WRITE;
+  buf[4] = SERVO_ID_WRITE;
   buf[5] = newID;
-  buf[6] = LobotCheckSum(buf);
+  buf[6] = CheckSum(buf);
   SerialX.write(buf, 7);
 
-#ifdef LOBOT_DEBUG
-  Serial.println("LOBOT SERVO ID WRITE");
+#ifdef DEBUG
+  Serial.println("SERVO ID WRITE");
   int debug_value_i = 0;
   for (debug_value_i = 0; debug_value_i < buf[3] + 3; debug_value_i++)
   {
@@ -116,22 +116,22 @@ void LobotSerialServoSetID(HardwareSerial &SerialX, uint8_t oldID, uint8_t newID
 }
 
 // Motor mode
-void LobotSerialServoSetMode(SoftwareSerial &SerialX, uint8_t id, uint8_t Mode, int16_t Speed)
+void SerialServoSetMode(SoftwareSerial &SerialX, uint8_t id, uint8_t Mode, int16_t Speed)
 {
   byte buf[10];
 
-  buf[0] = buf[1] = LOBOT_SERVO_FRAME_HEADER;
+  buf[0] = buf[1] = SERVO_FRAME_HEADER;
   buf[2] = id;
   buf[3] = 7;
-  buf[4] = LOBOT_SERVO_OR_MOTOR_MODE_WRITE;
+  buf[4] = SERVO_OR_MOTOR_MODE_WRITE;
   buf[5] = Mode;
   buf[6] = 0;
   buf[7] = GET_LOW_BYTE((uint16_t)Speed);
   buf[8] = GET_HIGH_BYTE((uint16_t)Speed);
-  buf[9] = LobotCheckSum(buf);
+  buf[9] = CheckSum(buf);
 
-#ifdef LOBOT_DEBUG
-  Serial.println("LOBOT SERVO Set Mode");
+#ifdef DEBUG
+  Serial.println("SERVO Set Mode");
   int debug_value_i = 0;
   for (debug_value_i = 0; debug_value_i < buf[3] + 3; debug_value_i++)
   {
@@ -143,20 +143,20 @@ void LobotSerialServoSetMode(SoftwareSerial &SerialX, uint8_t id, uint8_t Mode, 
 
   SerialX.write(buf, 10);
 }
-void LobotSerialServoLoad(HardwareSerial &SerialX, uint8_t id)
+void SerialServoLoad(HardwareSerial &SerialX, uint8_t id)
 {
   byte buf[7];
-  buf[0] = buf[1] = LOBOT_SERVO_FRAME_HEADER;
+  buf[0] = buf[1] = SERVO_FRAME_HEADER;
   buf[2] = id;
   buf[3] = 4;
-  buf[4] = LOBOT_SERVO_LOAD_OR_UNLOAD_WRITE;
+  buf[4] = SERVO_LOAD_OR_UNLOAD_WRITE;
   buf[5] = 1;
-  buf[6] = LobotCheckSum(buf);
+  buf[6] = CheckSum(buf);
 
   SerialX.write(buf, 7);
 
-#ifdef LOBOT_DEBUG
-  Serial.println("LOBOT SERVO LOAD WRITE");
+#ifdef DEBUG
+  Serial.println("SERVO LOAD WRITE");
   int debug_value_i = 0;
   for (debug_value_i = 0; debug_value_i < buf[3] + 3; debug_value_i++)
   {
@@ -167,20 +167,20 @@ void LobotSerialServoLoad(HardwareSerial &SerialX, uint8_t id)
 #endif
 }
 
-void LobotSerialServoUnload(HardwareSerial &SerialX, uint8_t id)
+void SerialServoUnload(HardwareSerial &SerialX, uint8_t id)
 {
   byte buf[7];
-  buf[0] = buf[1] = LOBOT_SERVO_FRAME_HEADER;
+  buf[0] = buf[1] = SERVO_FRAME_HEADER;
   buf[2] = id;
   buf[3] = 4;
-  buf[4] = LOBOT_SERVO_LOAD_OR_UNLOAD_WRITE;
+  buf[4] = SERVO_LOAD_OR_UNLOAD_WRITE;
   buf[5] = 0;
-  buf[6] = LobotCheckSum(buf);
+  buf[6] = CheckSum(buf);
 
   SerialX.write(buf, 7);
 
-#ifdef LOBOT_DEBUG
-  Serial.println("LOBOT SERVO LOAD WRITE");
+#ifdef DEBUG
+  Serial.println("SERVO LOAD WRITE");
   int debug_value_i = 0;
   for (debug_value_i = 0; debug_value_i < buf[3] + 3; debug_value_i++)
   {
@@ -191,7 +191,7 @@ void LobotSerialServoUnload(HardwareSerial &SerialX, uint8_t id)
 #endif
 }
 
-int LobotSerialServoReceiveHandle(HardwareSerial &SerialX, byte *ret)
+int SerialServoReceiveHandle(HardwareSerial &SerialX, byte *ret)
 {
   bool frameStarted = false;
   bool receiveFinished = false;
@@ -208,7 +208,7 @@ int LobotSerialServoReceiveHandle(HardwareSerial &SerialX, byte *ret)
     delayMicroseconds(100);
     if (!frameStarted)
     {
-      if (rxBuf == LOBOT_SERVO_FRAME_HEADER)
+      if (rxBuf == SERVO_FRAME_HEADER)
       {
         frameCount++;
         if (frameCount == 2)
@@ -241,7 +241,7 @@ int LobotSerialServoReceiveHandle(HardwareSerial &SerialX, byte *ret)
       if (dataCount == dataLength + 3)
       {
 
-#ifdef LOBOT_DEBUG
+#ifdef DEBUG
         Serial.print("RECEIVE DATA:");
         for (i = 0; i < dataCount; i++)
         {
@@ -251,10 +251,10 @@ int LobotSerialServoReceiveHandle(HardwareSerial &SerialX, byte *ret)
         Serial.println(" ");
 #endif
 
-        if (LobotCheckSum(recvBuf) == recvBuf[dataCount - 1])
+        if (CheckSum(recvBuf) == recvBuf[dataCount - 1])
         {
 
-#ifdef LOBOT_DEBUG
+#ifdef DEBUG
           Serial.println("Check SUM OK!!");
           Serial.println("");
 #endif
@@ -269,20 +269,20 @@ int LobotSerialServoReceiveHandle(HardwareSerial &SerialX, byte *ret)
   }
 }
 
-int LobotSerialServoReadPosition(HardwareSerial &SerialX, uint8_t id)
+int SerialServoReadPosition(HardwareSerial &SerialX, uint8_t id)
 {
   int count = 10000;
   int ret;
   byte buf[6];
 
-  buf[0] = buf[1] = LOBOT_SERVO_FRAME_HEADER;
+  buf[0] = buf[1] = SERVO_FRAME_HEADER;
   buf[2] = id;
   buf[3] = 3;
-  buf[4] = LOBOT_SERVO_POS_READ;
-  buf[5] = LobotCheckSum(buf);
+  buf[4] = SERVO_POS_READ;
+  buf[5] = CheckSum(buf);
 
-#ifdef LOBOT_DEBUG
-  Serial.println("LOBOT SERVO Pos READ");
+#ifdef DEBUG
+  Serial.println("SERVO Pos READ");
   int debug_value_i = 0;
   for (debug_value_i = 0; debug_value_i < buf[3] + 3; debug_value_i++)
   {
@@ -304,30 +304,30 @@ int LobotSerialServoReadPosition(HardwareSerial &SerialX, uint8_t id)
       return -2048;
   }
 
-  if (LobotSerialServoReceiveHandle(SerialX, buf) > 0)
+  if (SerialServoReceiveHandle(SerialX, buf) > 0)
     ret = (int16_t)BYTE_TO_HW(buf[2], buf[1]);
   else
     ret = -2048;
 
-#ifdef LOBOT_DEBUG
+#ifdef DEBUG
   Serial.println(ret);
 #endif
   return ret;
 }
-int LobotSerialServoReadVin(HardwareSerial &SerialX, uint8_t id)
+int SerialServoReadVin(HardwareSerial &SerialX, uint8_t id)
 {
   int count = 10000;
   int ret;
   byte buf[6];
 
-  buf[0] = buf[1] = LOBOT_SERVO_FRAME_HEADER;
+  buf[0] = buf[1] = SERVO_FRAME_HEADER;
   buf[2] = id;
   buf[3] = 3;
-  buf[4] = LOBOT_SERVO_VIN_READ;
-  buf[5] = LobotCheckSum(buf);
+  buf[4] = SERVO_VIN_READ;
+  buf[5] = CheckSum(buf);
 
-#ifdef LOBOT_DEBUG
-  Serial.println("LOBOT SERVO VIN READ");
+#ifdef DEBUG
+  Serial.println("SERVO VIN READ");
   int debug_value_i = 0;
   for (debug_value_i = 0; debug_value_i < buf[3] + 3; debug_value_i++)
   {
@@ -349,12 +349,12 @@ int LobotSerialServoReadVin(HardwareSerial &SerialX, uint8_t id)
       return -2048;
   }
 
-  if (LobotSerialServoReceiveHandle(SerialX, buf) > 0)
+  if (SerialServoReceiveHandle(SerialX, buf) > 0)
     ret = (int16_t)BYTE_TO_HW(buf[2], buf[1]);
   else
     ret = -2049;
 
-#ifdef LOBOT_DEBUG
+#ifdef DEBUG
   Serial.println(ret);
 #endif
   return ret;
