@@ -366,7 +366,7 @@ void setup()
   Serial.begin(115200);
   delay(1000);
 
-  // Serial servo
+  // set the data rate for the SoftwareSerial port
   serial_servo.begin(115200);
   delay(1000);
 }
