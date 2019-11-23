@@ -48,9 +48,11 @@ const byte ID2 = 2;
 const byte ID3 = 3;
 // Back servos
 const byte ID4 = 4;
-
-// SoftwareSerial for servo
-SoftwareSerial serial_servo(10, 11);
+// Servo motor pins
+const byte RX_PIN_SERVO = 10;
+const byte TX_PIN_SERVO = 11;
+// Servo motors SoftwareSerial(rxPin, txPin)
+SoftwareSerial serial_servo(RX_PIN_SERVO, TX_PIN_SERVO);
 
 byte CheckSum(byte buf[])
 {
