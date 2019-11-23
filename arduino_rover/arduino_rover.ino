@@ -39,11 +39,15 @@
 
 //#define DEBUG 1  /*Debug ：print debug value*/
 
-// Define servo IDs
-#define ID1 1
-#define ID2 2
-#define ID3 3
-#define ID4 4
+// CONSTANTS
+// Right servos
+const byte ID1 = 1;
+// Left servos
+const byte ID2 = 2;
+// Front servos
+const byte ID3 = 3;
+// Back servos
+const byte ID4 = 4;
 
 // SoftwareSerial for servo
 SoftwareSerial serial_servo(10, 11);
