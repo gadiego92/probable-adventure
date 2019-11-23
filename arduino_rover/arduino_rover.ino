@@ -54,6 +54,14 @@ const byte TX_PIN_SERVO = 11;
 // Servo motors SoftwareSerial(rxPin, txPin)
 SoftwareSerial serial_servo(RX_PIN_SERVO, TX_PIN_SERVO);
 
+const float ANGLE = 0.24;
+const int MIN_SPEED = 0;
+const int MAX_SPEED = 1000;
+const int MIN_ANGLE = 0;
+const int HALF_ANGLE = 90;
+const int MAX_ANGLE = 180;
+const int TURN_TIME = 1000;
+
 byte CheckSum(byte buf[])
 {
   byte i;
