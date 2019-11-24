@@ -379,6 +379,7 @@ int SerialServoReadVin(HardwareSerial &SerialX, uint8_t id)
   return ret;
 }
 
+char character;
 int speed = MIN_SPEED;
 int front_wheels_angle = HALF_ANGLE;
 int back_wheels_angle = HALF_ANGLE;
@@ -406,7 +407,7 @@ void loop()
   {
     Serial.println("Serial available");
 
-    int character = serial_bluetooth.read();
+    character = serial_bluetooth.read();
     Serial.println(character);
     // q (stop turn)    w (forward)   e (align)
     // a (left)         s (stop)      d (right)
