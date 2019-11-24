@@ -375,6 +375,11 @@ int SerialServoReadVin(HardwareSerial &SerialX, uint8_t id)
 }
 
 int speed = MIN_SPEED;
+int front_wheels_angle = HALF_ANGLE;
+int back_wheels_angle = HALF_ANGLE;
+float front_wheels_angle_turn = front_wheels_angle / ANGLE; // 90 / 0.24 = 375
+float back_wheels_angle_turn = back_wheels_angle / ANGLE;
+
 void setup()
 {
   // put your setup code here, to run once:
@@ -433,9 +438,70 @@ void loop()
       SerialServoSetMode(serial_servo, ID2, 1, +speed);
       break;
 
+    case 'a':
+      Serial.println("Rover. Turn left.");
+      // Turn left
+      // If ANGLE has not reached the min ANGLE (left)
+      if (front_wheels_angle > MIN_ANGLE)
+      {
+        front_wheels_angle = front_wheels_angle - 10;
+        front_wheels_angle_turn = front_wheels_angle / ANGLE;
+      }
+      SerialServoMove(serial_servo, ID3, front_wheels_angle_turn, TURN_TIME);
+      break;
    
+    case 'd':
+      Serial.println("Rover. Turn right.");
+      // Turn right
+      // If ANGLE has not reached the max ANGLE (right)
+      if (front_wheels_angle < MAX_ANGLE)
+      {
+        front_wheels_angle = front_wheels_angle + 10;
+        front_wheels_angle_turn = front_wheels_angle / ANGLE;
+      }
+      SerialServoMove(serial_servo, ID3, front_wheels_angle_turn, TURN_TIME);
+      break;
  
+    case 'q':
+      Serial.println("Rover. Stop turning.");
+      // Stop turn
+      SerialServoStopMove(serial_servo, ID3);
+      SerialServoStopMove(serial_servo, ID4);
+      break;
     
+    case 'e':
+      Serial.println("Rover. Align wheels.");
+      // Center wheels
+      front_wheels_angle = HALF_ANGLE;
+      front_wheels_angle_turn = front_wheels_angle / ANGLE;
+      SerialServoMove(serial_servo, ID3, front_wheels_angle_turn, TURN_TIME);
+      // back_wheels_angle = HALF_ANGLE;
+      // back_wheels_angle_turn = back_wheels_angle / ANGLE;
+      // SerialServoMove(serial_servo, ID4, back_wheels_angle_turn, TURN_TIME);
+      break;
+
+    case 'z':
+      Serial.println("Rover. Max left angle.");
+      // Set max left angle
+      front_wheels_angle = MIN_ANGLE;
+      front_wheels_angle_turn = front_wheels_angle / ANGLE;
+      SerialServoMove(serial_servo, ID3, front_wheels_angle_turn, TURN_TIME);
+      // back_wheels_angle = MIN_ANGLE;
+      // back_wheels_angle_turn = back_wheels_angle / ANGLE;
+      // SerialServoMove(serial_servo, ID4, back_wheels_angle_turn, TURN_TIME);
+      break;
+
+    case 'c':
+      Serial.println("Rover. Max right angle.");
+      // Set max right angle
+      front_wheels_angle = MAX_ANGLE;
+      front_wheels_angle_turn = front_wheels_angle / ANGLE;
+      SerialServoMove(serial_servo, ID3, front_wheels_angle_turn, TURN_TIME);
+      // back_wheels_angle = MAX_ANGLE;
+      // back_wheels_angle_turn = back_wheels_angle / ANGLE;
+      // SerialServoMove(serial_servo, ID4, back_wheels_angle_turn, TURN_TIME);
+      break;
+
     }
   }
 }
