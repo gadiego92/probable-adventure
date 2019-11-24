@@ -374,6 +374,7 @@ int SerialServoReadVin(HardwareSerial &SerialX, uint8_t id)
   return ret;
 }
 
+int speed = MIN_SPEED;
 void setup()
 {
   // put your setup code here, to run once:
@@ -387,7 +388,54 @@ void setup()
 
 void loop()
 {
+  if (Serial.available() > 0)
+  {
+    Serial.println("Serial available");
+
+    int character = Serial.read();
+    Serial.println(character);
+    // q (stop turn)    w (forward)   e (align)
+    // a (left)         s (stop)      d (right)
+    // z (max left)     x (back)      c (max right)
+    switch (character)
+    {
+    case 'w':
+      Serial.println("Rover. Go forward.");
+      // Go forward
+      // If speed has not reached the max speed limit
+      if (abs(speed) < MAX_SPEED)
+      {
+        speed = speed + 100;
+      }
+      Serial.println(speed);
+      SerialServoSetMode(serial_servo, ID1, 1, -speed);
+      SerialServoSetMode(serial_servo, ID2, 1, +speed);
+      break;
+
+    case 's':
+      Serial.println("Rover. Stop.");
+      // Stop
+      speed = MIN_SPEED;
+      SerialServoSetMode(serial_servo, ID1, 1, speed);
+      SerialServoSetMode(serial_servo, ID2, 1, speed);
+      break;
+
+    case 'x':
+      Serial.println("Rover. Go back.");
+      // Go back
+      // If speed has not reached the max speed limit
+      if (abs(speed) < MAX_SPEED)
+      {
+        speed = speed - 100;
+      }
+      Serial.println(speed);
+      SerialServoSetMode(serial_servo, ID1, 1, -speed);
+      SerialServoSetMode(serial_servo, ID2, 1, +speed);
+      break;
+
    
  
     
+    }
+  }
 }
