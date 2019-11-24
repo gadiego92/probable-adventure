@@ -53,6 +53,11 @@ const byte RX_PIN_SERVO = 10;
 const byte TX_PIN_SERVO = 11;
 // Servo motors SoftwareSerial(rxPin, txPin)
 SoftwareSerial serial_servo(RX_PIN_SERVO, TX_PIN_SERVO);
+// Bluetooth pins
+const byte RX_PIN_BLUETOOTH = 6;
+const byte TX_PIN_BLUETOOTH = 7;
+// Servo motors SoftwareSerial(rxPin, txPin)
+SoftwareSerial serial_bluetooth(RX_PIN_BLUETOOTH, TX_PIN_BLUETOOTH);
 
 const float ANGLE = 0.24;
 const int MIN_SPEED = 0;
@@ -389,15 +394,19 @@ void setup()
   // set the data rate for the SoftwareSerial port
   serial_servo.begin(115200);
   delay(1000);
+
+  // set the data rate for the bluetooth SoftwareSerial port
+  serial_bluetooth.begin(9600);
+  delay(1000);
 }
 
 void loop()
 {
-  if (Serial.available() > 0)
+  if (serial_bluetooth.available() > 0)
   {
     Serial.println("Serial available");
 
-    int character = Serial.read();
+    int character = serial_bluetooth.read();
     Serial.println(character);
     // q (stop turn)    w (forward)   e (align)
     // a (left)         s (stop)      d (right)
