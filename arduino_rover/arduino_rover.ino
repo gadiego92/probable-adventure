@@ -389,8 +389,10 @@ float back_wheels_angle_turn = back_wheels_angle / ANGLE;
 void setup()
 {
   // put your setup code here, to run once:
+#ifdef DEBUG
   Serial.begin(115200);
   delay(1000);
+#endif
 
   // set the data rate for the SoftwareSerial port
   serial_servo.begin(115200);
@@ -405,30 +407,40 @@ void loop()
 {
   if (serial_bluetooth.available() > 0)
   {
+#ifdef DEBUG
     Serial.println("Serial available");
+#endif
 
     character = serial_bluetooth.read();
+#ifdef DEBUG
     Serial.println(character);
+#endif
     // q (stop turn)    w (forward)   e (align)
     // a (left)         s (stop)      d (right)
     // z (max left)     x (back)      c (max right)
     switch (character)
     {
     case 'w':
+#ifdef DEBUG
       Serial.println("Rover. Go forward.");
+#endif
       // Go forward
       // If speed has not reached the max speed limit
       if (abs(speed) < MAX_SPEED)
       {
         speed = speed + 100;
       }
+#ifdef DEBUG
       Serial.println(speed);
+#endif
       SerialServoSetMode(serial_servo, ID1, 1, -speed);
       SerialServoSetMode(serial_servo, ID2, 1, +speed);
       break;
 
     case 's':
+#ifdef DEBUG
       Serial.println("Rover. Stop.");
+#endif
       // Stop
       speed = MIN_SPEED;
       SerialServoSetMode(serial_servo, ID1, 1, speed);
@@ -436,20 +448,26 @@ void loop()
       break;
 
     case 'x':
+#ifdef DEBUG
       Serial.println("Rover. Go back.");
+#endif
       // Go back
       // If speed has not reached the max speed limit
       if (abs(speed) < MAX_SPEED)
       {
         speed = speed - 100;
       }
+#ifdef DEBUG
       Serial.println(speed);
+#endif
       SerialServoSetMode(serial_servo, ID1, 1, -speed);
       SerialServoSetMode(serial_servo, ID2, 1, +speed);
       break;
 
     case 'a':
+#ifdef DEBUG
       Serial.println("Rover. Turn left.");
+#endif
       // Turn left
       // If ANGLE has not reached the min ANGLE (left)
       if (front_wheels_angle > MIN_ANGLE)
@@ -461,7 +479,9 @@ void loop()
       break;
    
     case 'd':
+#ifdef DEBUG
       Serial.println("Rover. Turn right.");
+#endif
       // Turn right
       // If ANGLE has not reached the max ANGLE (right)
       if (front_wheels_angle < MAX_ANGLE)
@@ -473,14 +493,18 @@ void loop()
       break;
  
     case 'q':
+#ifdef DEBUG
       Serial.println("Rover. Stop turning.");
+#endif
       // Stop turn
       SerialServoStopMove(serial_servo, ID3);
       SerialServoStopMove(serial_servo, ID4);
       break;
     
     case 'e':
+#ifdef DEBUG
       Serial.println("Rover. Align wheels.");
+#endif
       // Center wheels
       front_wheels_angle = HALF_ANGLE;
       front_wheels_angle_turn = front_wheels_angle / ANGLE;
@@ -491,7 +515,9 @@ void loop()
       break;
 
     case 'z':
+#ifdef DEBUG
       Serial.println("Rover. Max left angle.");
+#endif
       // Set max left angle
       front_wheels_angle = MIN_ANGLE;
       front_wheels_angle_turn = front_wheels_angle / ANGLE;
@@ -502,7 +528,9 @@ void loop()
       break;
 
     case 'c':
+#ifdef DEBUG
       Serial.println("Rover. Max right angle.");
+#endif
       // Set max right angle
       front_wheels_angle = MAX_ANGLE;
       front_wheels_angle_turn = front_wheels_angle / ANGLE;
@@ -513,7 +541,9 @@ void loop()
       break;
 
     default:
+#ifdef DEBUG
       Serial.println("Rover. Character not identified.");
+#endif
     }
   }
 }
