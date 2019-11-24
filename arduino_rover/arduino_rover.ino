@@ -502,6 +502,8 @@ void loop()
       // SerialServoMove(serial_servo, ID4, back_wheels_angle_turn, TURN_TIME);
       break;
 
+    default:
+      Serial.println("Rover. Character not identified.");
     }
   }
 }
