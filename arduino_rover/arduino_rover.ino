@@ -37,7 +37,7 @@
 #define SERVO_LED_ERROR_WRITE      35
 #define SERVO_LED_ERROR_READ       36
 
-//#define DEBUG 1  /*Debug ：print debug value*/
+#define DEBUG 1  /*Debug ：print debug value*/
 
 // CONSTANTS
 // Right servos
@@ -540,8 +540,8 @@ void loop()
       // SerialServoMove(serial_servo, ID4, back_wheels_angle_turn, TURN_TIME);
       break;
 
-    default:
 #ifdef DEBUG
+    default:
       Serial.println("Rover. Character not identified.");
 #endif
     }
