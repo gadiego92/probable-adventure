@@ -116,10 +116,10 @@ def normmalize_values(old_value, old_min, old_max, new_min, new_max):
 if __name__ == "__main__":
     global pub
 
-    rospy.init_node('remote')
-    rospy.loginfo('remote node started')
+    rospy.init_node("remote_node")
+    rospy.loginfo("Starting the remote node")
 
     sub = rospy.Subscriber("/joy", Joy, callback)
-    pub = rospy.Publisher('joystick', Remote, queue_size=1)
+    pub = rospy.Publisher("/remote_topic", Remote, queue_size=1)
 
     rospy.spin()
