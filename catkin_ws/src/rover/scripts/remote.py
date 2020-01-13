@@ -113,7 +113,7 @@ def normmalize_values(old_value, old_min, old_max, new_min, new_max):
     return new_value
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     global pub
 
     rospy.init_node('remote')
