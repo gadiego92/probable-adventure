@@ -15,6 +15,7 @@ import logging
 
 
 SERVO_ID_ALL = 0xfe
+SERVO_FRAME_HEADER = 0x55
 
 SERVO_MOVE_TIME_WRITE = 1
 SERVO_MOVE_TIME_READ = 2
@@ -102,7 +103,7 @@ class ServoController(object):
         checksum = 255-((servo_id + length + command + sum(params)) % 256)
 
         command_list = []
-        command_list = [0x55, 0x55, servo_id, length, command]
+        command_list = [SERVO_FRAME_HEADER, SERVO_FRAME_HEADER, servo_id, length, command]
         command_list += params
         command_list += [checksum]
 
@@ -123,10 +124,10 @@ class ServoController(object):
         while True:
             data = []
             data += read(1)
-            if data[-1] != 0x55:
+            if data[-1] != SERVO_FRAME_HEADER:
                 continue
             data += read(1)
-            if data[-1] != 0x55:
+            if data[-1] != SERVO_FRAME_HEADER:
                 continue
             data += read(3)
             sid = data[2]
