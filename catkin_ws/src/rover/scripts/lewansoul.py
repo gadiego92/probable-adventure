@@ -97,16 +97,18 @@ class ServoController(object):
         self._timeout = timeout
         self._lock = threading.RLock()
 
-    def _command(self, servo_id, command, *params):
+    def _command(self, servo_id, command, params):
         length = 3 + len(params)
         checksum = 255-((servo_id + length + command + sum(params)) % 256)
-        LOGGER.debug('Sending servo control packet: %s', [
-            0x55, 0x55, servo_id, length, command, *params, checksum
-        ])
+
+        command_list = []
+        command_list = [0x55, 0x55, servo_id, length, command]
+        command_list += params
+        command_list += [checksum]
+
+        LOGGER.debug('Sending servo control packet: %s', command_list)
         with self._lock:
-            self._serial.write(bytearray([
-                0x55, 0x55, servo_id, length, command, *params, checksum
-            ]))
+            self._serial.write(bytearray(command_list))
 
     def _wait_for_response(self, servo_id, command, timeout=None):
         timeout = Timeout(timeout or self._timeout)
@@ -151,11 +153,11 @@ class ServoController(object):
                 LOGGER.warning('Got command response from unexpected servo %s', sid)
                 continue
 
-            return [sid, cmd, *params]
+            return [sid, cmd, params]
 
     def _query(self, servo_id, command, timeout=None):
         with self._lock:
-            self._command(servo_id, command)
+            self._command(servo_id, command, [])
             return self._wait_for_response(servo_id, command, timeout=timeout)
 
     def servo(self, servo_id):
@@ -174,8 +176,8 @@ class ServoController(object):
 
         self._command(
             servo_id, SERVO_MOVE_TIME_WRITE,
-            lower_byte(position), higher_byte(position),
-            lower_byte(time), higher_byte(time),
+            (lower_byte(position), higher_byte(position),
+             lower_byte(time), higher_byte(time))
         )
 
     def get_prepared_move(self, servo_id, timeout=None):
@@ -189,15 +191,15 @@ class ServoController(object):
 
         self._command(
             servo_id, SERVO_MOVE_TIME_WAIT_WRITE,
-            lower_byte(position), higher_byte(position),
-            lower_byte(time), higher_byte(time),
+            (lower_byte(position), higher_byte(position),
+             lower_byte(time), higher_byte(time))
         )
 
     def move_start(self, servo_id=SERVO_ID_ALL):
-        self._command(servo_id, SERVO_MOVE_START)
+        self._command(servo_id, SERVO_MOVE_START, [])
 
     def move_stop(self, servo_id=SERVO_ID_ALL):
-        self._command(servo_id, SERVO_MOVE_STOP)
+        self._command(servo_id, SERVO_MOVE_STOP, [])
 
     def get_position_offset(self, servo_id, timeout=None):
         response = self._query(servo_id, SERVO_ANGLE_OFFSET_READ, timeout=timeout)
@@ -213,7 +215,7 @@ class ServoController(object):
         self._command(servo_id, SERVO_ANGLE_OFFSET_ADJUST, deviation)
 
     def save_position_offset(self, servo_id):
-        self._command(servo_id, SERVO_ANGLE_OFFSET_WRITE)
+        self._command(servo_id, SERVO_ANGLE_OFFSET_WRITE, [])
 
     def get_position_limits(self, servo_id, timeout=None):
         response = self._query(servo_id, SERVO_ANGLE_LIMIT_READ, timeout=timeout)
@@ -224,8 +226,8 @@ class ServoController(object):
         max_position = clamp(0, 1000, max_position)
         self._command(
             servo_id, SERVO_ANGLE_LIMIT_WRITE,
-            lower_byte(min_position), higher_byte(min_position),
-            lower_byte(max_position), higher_byte(max_position),
+            (lower_byte(min_position), higher_byte(min_position),
+             lower_byte(max_position), higher_byte(max_position))
         )
 
     def get_voltage_limits(self, servo_id, timeout=None):
@@ -237,8 +239,8 @@ class ServoController(object):
         max_voltage = clamp(4500, 12000, max_voltage)
         self._command(
             servo_id, SERVO_VIN_LIMIT_WRITE,
-            lower_byte(min_voltage), higher_byte(min_voltage),
-            lower_byte(max_voltage), higher_byte(max_voltage),
+            (lower_byte(min_voltage), higher_byte(min_voltage),
+             lower_byte(max_voltage), higher_byte(max_voltage))
         )
 
     def get_max_temperature_limit(self, servo_id, timeout=None):
@@ -279,7 +281,8 @@ class ServoController(object):
 
     def set_servo_mode(self, servo_id):
         self._command(
-            servo_id, SERVO_OR_MOTOR_MODE_WRITE, 0, 0, 0, 0,
+            servo_id, SERVO_OR_MOTOR_MODE_WRITE,
+            (0, 0, 0, 0)
         )
 
     def set_motor_mode(self, servo_id, speed=0):
@@ -287,8 +290,8 @@ class ServoController(object):
         if speed < 0:
             speed += 65536
         self._command(
-            servo_id, SERVO_OR_MOTOR_MODE_WRITE, 1, 0,
-            lower_byte(speed), higher_byte(speed),
+            servo_id, SERVO_OR_MOTOR_MODE_WRITE,
+            (1, 0, lower_byte(speed), higher_byte(speed))
         )
 
     def is_motor_on(self, servo_id, timeout=None):
