@@ -1,10 +1,10 @@
 __all__ = [
-    'ServoController',
-    'TimeoutError',
+    "ServoController",
+    "TimeoutError",
 
-    'SERVO_ERROR_OVER_TEMPERATURE',
-    'SERVO_ERROR_OVER_VOLTAGE',
-    'SERVO_ERROR_LOCKED_ROTOR',
+    "SERVO_ERROR_OVER_TEMPERATURE",
+    "SERVO_ERROR_OVER_VOLTAGE",
+    "SERVO_ERROR_LOCKED_ROTOR",
 ]
 
 import logging
@@ -70,14 +70,14 @@ class TimeoutError(RuntimeError):
     pass
 
 
-LOGGER = logging.getLogger('lewansoul.servos.lx16a')
+LOGGER = logging.getLogger("lewansoul.servos.lx16a")
 
 
 class Servo(object):
     def __init__(self, controller, servo_id):
         self.__dict__.update({
-            '_controller': controller,
-            'servo_id': servo_id,
+            "_controller": controller,
+            "servo_id": servo_id,
         })
 
     def __hasattr__(self, name):
@@ -107,7 +107,7 @@ class ServoController(object):
         command_list += params
         command_list += [checksum]
 
-        LOGGER.debug('Sending servo control packet: %s', command_list)
+        LOGGER.debug("Sending servo control packet: %s", command_list)
 
         with self._lock:
             self._serial.write(bytearray(command_list))
@@ -142,7 +142,7 @@ class ServoController(object):
             cmd = data[4]
             
             if length > 7:
-                LOGGER.error('Invalid length for packet %s', list(data))
+                LOGGER.error("Invalid length for packet %s", list(data))
                 continue
 
             data += read(length - 3) if length > 3 else []
@@ -151,15 +151,15 @@ class ServoController(object):
             checksum = data[-1]
             
             if 255 - (sid + length + cmd + sum(params)) % 256 != checksum:
-                LOGGER.error('Invalid checksum for packet %s', list(data))
+                LOGGER.error("Invalid checksum for packet %s", list(data))
                 continue
 
             if cmd != command:
-                LOGGER.warning('Got unexpected command %s response %s', cmd, list(data))
+                LOGGER.warning("Got unexpected command %s response %s", cmd, list(data))
                 continue
 
             if servo_id != SERVO_ID_ALL and sid != servo_id:
-                LOGGER.warning('Got command response from unexpected servo %s', sid)
+                LOGGER.warning("Got command response from unexpected servo %s", sid)
                 continue
 
             return [sid, cmd, params]
@@ -192,7 +192,7 @@ class ServoController(object):
         )
 
     def get_prepared_move(self, servo_id, timeout=None):
-        """Returns servo position and time tuple"""
+        """ Returns servo position and time tuple """
         response = self._query(servo_id, SERVO_MOVE_TIME_WAIT_READ, timeout=timeout)
 
         return word(response[2], response[3]), word(response[4], response[5])
