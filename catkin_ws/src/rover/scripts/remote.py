@@ -8,7 +8,9 @@ import math
 
 def callback(joy_message):
     """
-        Callback function called when a msg is received from /joy topic
+    Callback function called when a Joy message is received from /joy topic
+
+    :param list joy_message: List with Joy parameters
     """
 
     # LEFT
@@ -37,7 +39,9 @@ def callback(joy_message):
 
 def set_speed(y):
     """
-        Set speed [-100, +100] from right joystick values [x, y]
+    Set speed [-100, +100] from right joystick values [x, y]
+
+    :param float y: Y axe joystick value
     """
 
     min_point = 0
@@ -53,7 +57,10 @@ def set_speed(y):
 
 def set_steering(x, y):
     """
-        Set radius [-100, +100] from Left joystick values [x, y]
+    Set radius [-100, +100] from left joystick values [x, y]
+
+    :param float x: X axe joystick value
+    :param float y: Y axe joystick value
     """
 
     # Convert cartesian coordinates to polar coordinates
@@ -76,7 +83,10 @@ def set_steering(x, y):
 
 def cartesian2polar(x, y):
     """
-        Convert cartesian coordinates to polar coordinates
+    Convert cartesian coordinates to polar coordinates
+
+    :param float x: X axe joystick value
+    :param float y: Y axe joystick value
     """
 
     polar = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
@@ -93,7 +103,13 @@ def cartesian2polar(x, y):
 
 def normmalize_values(old_value, old_min, old_max, new_min, new_max):
     """
-        Normalize and old_value [old_min, old_max] to a new_value [new_min, new_max]
+    Normalize and old_value [old_min, old_max] to a new_value [new_min, new_max]
+    
+    :param float old_value: Old value
+    :param float old_min: Old minimun value
+    :param float old_max: Old maximum value
+    :param float new_min: New minimum value
+    :param float new_max: New maximum value
     """
 
     # Normalize [-1, 1]
