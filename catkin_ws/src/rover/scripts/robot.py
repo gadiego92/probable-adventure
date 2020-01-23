@@ -7,23 +7,24 @@ import rospy
 
 
 class Robot():
-    '''
+    """
     Robot class contains all the math and motor control algorithms to move the rover
+    
     In order to call command the robot the only method necessary is the sendCommands() method with drive velocity and turning amount
-    '''
+    """
 
     def __init__(self):
-        # distances = rospy.get_param('mech_dist', '7.254,10.5,10.5,10.073').split(",")
-        # distances = rospy.get_param( 'mech_dist', '23, 25.5, 28.5, 26' ).split( "," )
-        distances = '23, 25.5, 28.5, 26'.split(",")
+        # distances = rospy.get_param("mech_dist", "7.254,10.5,10.5,10.073").split(",")
+        # distances = rospy.get_param( "mech_dist", "23, 25.5, 28.5, 26" ).split( "," )
+        distances = "23, 25.5, 28.5, 26".split(",")
         self.d1 = float(distances[0])
         self.d2 = float(distances[1])
         self.d3 = float(distances[2])
         self.d4 = float(distances[3])
 
         # to change when getting Mc thread lock to work
-        # enc_min_raw = rospy.get_param( 'enc_min', 0 )
-        # enc_max_raw = rospy.get_param( 'enc_max', 1000 )
+        # enc_min_raw = rospy.get_param( "enc_min", 0 )
+        # enc_max_raw = rospy.get_param( "enc_max", 1000 )
         enc_min_raw = 0
         enc_max_raw = 1000
 
@@ -36,13 +37,13 @@ class Robot():
 
     @staticmethod
     def deg2tick(deg, e_min, e_max):
-        '''
+        """
         Converts a degrees to tick value
 
         :param int deg  : Degrees value desired
         :param int e_min: The minimum encoder value based on physical stop
         :param int e_max: The maximum encoder value based on physical stop
-        '''
+        """
 
         temp = (e_max + e_min) / 2 + ((e_max - e_min) / 90) * deg
 
@@ -56,12 +57,12 @@ class Robot():
         return temp
 
     def calculateVelocity(self, v, r):
-        '''
+        """
         Returns a list of speeds for each individual drive motor based on current turning radius
 
         :param int v: Drive speed command range from -100 to 100
         :param int r: Current turning radius range from -100 to 100
-        '''
+        """
 
         if (v == 0):
             return [0] * 6
@@ -107,11 +108,11 @@ class Robot():
             return velocity
 
     def calculateTargetDeg(self, radius):
-        '''
+        """
         Takes a turning radius and calculates what angle [degrees] each corner should be at
 
         :param int radius: Radius drive command, ranges from -100 (turning left) to 100 (turning right)
-        '''
+        """
 
         # Scaled from 555 to 55 centimeters
         if radius == 0:
@@ -148,11 +149,11 @@ class Robot():
             return [-ang2, -ang1, ang4, ang3]
 
     def calculateTargetTick(self, tar_enc, cur_enc):
-        '''
+        """
         Takes the target angle and gets what encoder tick that value is for position control
 
         :param list [int] tar_enc: List of target angles in degrees for each corner
-        '''
+        """
 
         tick = []
 
@@ -165,13 +166,13 @@ class Robot():
         return tick
 
     def generateCommands(self, v, r, encs):
-        '''
+        """
         Driving method for the Rover, rover will not do any commands if any motor controller
         throws an error
 
         :param int v: driving velocity command, % based from -100 (backward) to 100 (forward)
         :param int r: driving turning radius command, % based from -100 (left) to 100 (right)
-        '''
+        """
 
         # Get speed of each wheel
         speed = self.calculateVelocity(v, r)
