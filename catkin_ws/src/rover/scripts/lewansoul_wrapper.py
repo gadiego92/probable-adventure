@@ -1,0 +1,94 @@
+#!/usr/bin/env python
+import logging
+
+import rospy
+import serial
+
+from lewansoul import ServoController
+
+SERIAL_PORT = "/dev/ttyUSB0"
+BAUD_RATE = 115200
+
+SERVO_LEFT_FRONT = 1
+SERVO_RIGHT_FRONT = 2
+SERVO_LEFT_MIDDLE = 3
+SERVO_RIGHT_MIDDLE = 4
+SERVO_LEFT_BACK = 5
+SERVO_RIGHT_BACK = 6
+
+SERVO_FRONT_LEFT = 7
+SERVO_FRONT_RIGHT = 8
+SERVO_BACK_LEFT = 9
+SERVO_BACK_RIGHT = 10
+
+
+class MotorControllers(object):
+    """
+    MotorControllers class contains the methods necessary to send commands to
+    the motor controllers for the corner and drive motors.
+    """
+
+    def __init__(self):
+        rospy.loginfo("Initializing motor controllers")
+
+        logging.basicConfig(level=logging.DEBUG)
+
+        self.lw_controller = ServoController(
+            serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1))
+
+        motor_status = 1
+
+        # Goit trought all servos [1 - 10]
+        for servo_id in range(1, 11):
+            print "Attempting to talk to motor controller ID{0}".format(servo_id)
+            motor_status = motor_status & self.lw_controller.is_motor_on(servo_id)
+            # DEBUG
+            print "Motor ID{0} is {1}".format(servo_id, motor_status)
+
+        if motor_status != 0:
+            print "[Motor__init__] Sucessfully connected to Lewansoul motor controllers"
+        else:
+            raise Exception("Unable to establish connection to Lewansoul motor controllers")
+
+    def cornerToPosition(self, corner_ticks):
+        """
+        Method to send position commands to the corner motors
+
+        :param list corner_ticks: A list of ticks for each of the corner motors to move to
+        """
+
+        servo_front_left = self.lw_controller.servo(SERVO_FRONT_LEFT)
+        servo_front_right = self.lw_controller.servo(SERVO_FRONT_RIGHT)
+        servo_back_left = self.lw_controller.servo(SERVO_BACK_LEFT)
+        servo_back_right = self.lw_controller.servo(SERVO_BACK_RIGHT)
+
+        servo_front_left.move_prepare(corner_ticks[0])
+        servo_front_right.move_prepare(corner_ticks[1])
+        servo_back_left.move_prepare(corner_ticks[2])
+        servo_back_right.move_prepare(corner_ticks[3])
+
+        self.lw_controller.move_start()
+
+    def sendMotorDuty(self, drive_ticks):
+        """
+        Method to send position commands to the drive motors
+
+        :param list drive_ticks: A list of ticks for each of the drice motors to speed to
+        """
+
+        self.lw_controller.set_motor_mode(SERVO_LEFT_FRONT, drive_ticks[0])
+        self.lw_controller.set_motor_mode(SERVO_LEFT_MIDDLE, drive_ticks[1])
+        self.lw_controller.set_motor_mode(SERVO_LEFT_BACK, drive_ticks[2])
+        self.lw_controller.set_motor_mode(SERVO_RIGHT_FRONT, drive_ticks[3])
+        self.lw_controller.set_motor_mode(SERVO_RIGHT_MIDDLE, drive_ticks[4])
+        self.lw_controller.set_motor_mode(SERVO_RIGHT_BACK, drive_ticks[5])
+
+    def killMotors(self):
+        """
+        Stops drive motors and align corner motors
+        """
+
+        # Align corner motors
+        self.cornerToPosition([0, 0, 0, 0])
+        # Stop drive motors
+        self.sendMotorDuty([0, 0, 0, 0, 0, 0])
