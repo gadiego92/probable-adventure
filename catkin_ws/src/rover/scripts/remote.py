@@ -6,7 +6,7 @@ from rover_msgs.msg import Remote
 import math
 
 
-def callback(data):
+def callback(joy_message):
     """
         Callback function called when a msg is received from /joy topic
     """
@@ -23,10 +23,10 @@ def callback(data):
     # Front	[4] +
     # Back	[4] -
 
-    left_x = -data.axes[0]
-    left_y = data.axes[1]
-    right_x = -data.axes[3]
-    right_y = data.axes[4]
+    left_x = -joy_message.axes[0]
+    left_y = joy_message.axes[1]
+    right_x = -joy_message.axes[3]
+    right_y = joy_message.axes[4]
 
     joy_out = Remote()
     joy_out.x = set_speed(right_y)
