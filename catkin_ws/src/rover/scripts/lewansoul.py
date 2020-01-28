@@ -6,6 +6,7 @@ from serial.serialutil import Timeout
 
 SERVO_ID_ALL = 0xfe
 SERVO_FRAME_HEADER = 0x55
+SERVO_FRAME_HEADER_STRING = "0x55"
 
 SERVO_MOVE_TIME_WRITE = 1
 SERVO_MOVE_TIME_READ = 2
@@ -117,30 +118,43 @@ class ServoController(object):
 
         while True:
             data = []
+            # header part 1
             data += read(1)
 
-            if data[-1] != SERVO_FRAME_HEADER:
+            if hex(ord(data[-1])) != SERVO_FRAME_HEADER_STRING:
                 continue
             
+            # header part 2
             data += read(1)
-            
-            if data[-1] != SERVO_FRAME_HEADER:
+
+            if hex(ord(data[-1])) != SERVO_FRAME_HEADER_STRING:
                 continue
-            
+
+            # id, length and command
             data += read(3)
-            sid = data[2]
-            length = data[3]
-            cmd = data[4]
-            
+            # id
+            sid = ord(data[2])
+            # length
+            length = ord(data[3])
+            # command
+            cmd = ord(data[4])
+
             if length > 7:
                 LOGGER.error("Invalid length for packet %s", list(data))
                 continue
 
+            # params
             data += read(length - 3) if length > 3 else []
-            params = data[5:]
+            params_tmp = data[5:]
+
+            params = []
+            for valor in params_tmp:
+                params.append(ord(valor))
+
+            # Checksum
             data += read(1)
-            checksum = data[-1]
-            
+            checksum = ord(data[-1])
+
             if 255 - (sid + length + cmd + sum(params)) % 256 != checksum:
                 LOGGER.error("Invalid checksum for packet %s", list(data))
                 continue
