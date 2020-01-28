@@ -52,6 +52,7 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    FILES
    Remote.msg
+   Commands.msg
  )
 
 ## Generate services in the 'srv' folder
