@@ -148,7 +148,7 @@ class Robot():
             print(-ang2, -ang1, ang4, ang3)
             return [-ang2, -ang1, ang4, ang3]
 
-    def calculateTargetTick(self, tar_enc, cur_enc):
+    def calculateTargetTick(self, tar_enc):
         """
         Takes the target angle and gets what encoder tick that value is for position control
 
@@ -165,7 +165,7 @@ class Robot():
 
         return tick
 
-    def generateCommands(self, v, r, encs):
+    def generateCommands(self, v, r):
         """
         Driving method for the Rover, rover will not do any commands if any motor controller
         throws an error
@@ -177,6 +177,6 @@ class Robot():
         # Get speed of each wheel
         speed = self.calculateVelocity(v, r)
         # Get turn of each wheel measured in ticks
-        ticks = self.calculateTargetTick(self.calculateTargetDeg(r), encs)
+        ticks = self.calculateTargetTick(self.calculateTargetDeg(r))
 
         return (speed, ticks)
