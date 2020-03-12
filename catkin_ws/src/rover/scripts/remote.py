@@ -41,16 +41,14 @@ def set_speed(y):
     """
     Set speed [-100, +100] from right joystick values [x, y]
 
-    :param float y: Y axe joystick value
+    :param float y: Y axe joystick value [-1, 1]
     """
 
-    min_point = 0
-    max_point = 180
-    min_speed = -100
-    max_speed = 100
+    old_min = -1
+    old_max = 1
 
     # Normalize speed value
-    speed = normmalize_values(y, min_point, max_point, min_speed, max_speed)
+    speed = normalize_values_100(y, old_min, old_max)
 
     return speed
 
@@ -59,24 +57,22 @@ def set_steering(x, y):
     """
     Set radius [-100, +100] from left joystick values [x, y]
 
-    :param float x: X axe joystick value
-    :param float y: Y axe joystick value
+    :param float x: X axe joystick value [-1, 1]
+    :param float y: Y axe joystick value [-1, 1]
     """
+
+    old_min = 0
+    old_max = 180
 
     # Convert cartesian coordinates to polar coordinates
     polar, theta = cartesian2polar(x, y)
 
     # Convert negative angle to corresponding positive
     if theta < 0:
-        theta = theta * -1
-
-    min_angle = 0
-    max_angle = 180
-    min_radius = -100
-    max_radius = 100
+        theta = -1 * theta
 
     # Normalize radius angle value
-    radius = normmalize_values(theta, min_angle, max_angle, min_radius, max_radius)
+    radius = normalize_values_100(theta, old_min, old_max)
 
     return radius
 
@@ -98,35 +94,22 @@ def cartesian2polar(x, y):
         # Go front [0 - 180]
         theta = 90
 
-    return polar, theta
+    return polar,  theta
 
 
-def normmalize_values(old_value, old_min, old_max, new_min, new_max):
+def normalize_values_100(old_value, old_min, old_max):
     """
-    Normalize and old_value [old_min, old_max] to a new_value [new_min, new_max]
-    
-    :param float old_value: Old value
-    :param float old_min: Old minimun value
-    :param float old_max: Old maximum value
-    :param float new_min: New minimum value
-    :param float new_max: New maximum value
+    Normalize an old_value [old_min, old_max] to a new value [-100, 100]
+
+    :param float old_value: value to be normalize
+    :param int old_min: old minimum interval value
+    :param int old_max: old maximum interval value
     """
 
-    # Normalize [-1, 1]
-    # range = max(a) - min(a);
-    range_angle = old_max - old_min
-    # a = (a - min(a)) / range;
-    zero_one_value = (old_value - old_min) / range_angle
+    new_min = -100
+    new_max = 100
 
-    # Normalize [-100, 100]
-    min_radius = -100
-    max_radius = 100
-    # range2 = y - x;
-    range_radius = min_radius - max_radius
-    # a = (a * range2) + x;
-    new_value = (zero_one_value * range_radius) + max_radius
-
-    return new_value
+    return (new_max - new_min) * ((old_value - old_min) / (old_max - old_min)) + new_min
 
 
 if __name__ == "__main__":
