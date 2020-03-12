@@ -9,24 +9,20 @@ import rospy
 class Robot():
     """
     Robot class contains all the math and motor control algorithms to move the rover
-    
+
     In order to call command the robot the only method necessary is the sendCommands() method with drive velocity and turning amount
     """
 
     def __init__(self):
-        # distances = rospy.get_param("mech_dist", "7.254,10.5,10.5,10.073").split(",")
-        # distances = rospy.get_param( "mech_dist", "23, 25.5, 28.5, 26" ).split( "," )
-        distances = "23, 25.5, 28.5, 26".split(",")
+        distances = rospy.get_param("hardware_distances", "23,25.5,28.5,26").split(",")
         self.d1 = float(distances[0])
         self.d2 = float(distances[1])
         self.d3 = float(distances[2])
         self.d4 = float(distances[3])
 
         # to change when getting Mc thread lock to work
-        # enc_min_raw = rospy.get_param( "enc_min", 0 )
-        # enc_max_raw = rospy.get_param( "enc_max", 1000 )
-        enc_min_raw = 0
-        enc_max_raw = 1000
+        enc_min_raw = rospy.get_param("enc_min", 0)
+        enc_max_raw = rospy.get_param("enc_max", 1000)
 
         enc_min_int = int(enc_min_raw)
         enc_max_int = int(enc_max_raw)

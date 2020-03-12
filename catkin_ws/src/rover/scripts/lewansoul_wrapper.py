@@ -6,8 +6,6 @@ import serial
 
 from lewansoul import ServoController
 
-SERIAL_PORT = "/dev/ttyUSB0"
-BAUD_RATE = 115200
 
 SERVO_LEFT_FRONT = 1
 SERVO_RIGHT_FRONT = 2
@@ -31,10 +29,13 @@ class MotorControllers(object):
     def __init__(self):
         rospy.loginfo("Initializing motor controllers")
 
+        serial_port = rospy.get_param("motor_controller_device", "/dev/ttyUSB0")
+        baud_rate = int(rospy.get_param("baud_rate", 115200))
+
         logging.basicConfig(level=logging.DEBUG)
 
         self.lw_controller = ServoController(
-            serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1))
+            serial.Serial(serial_port, baud_rate, timeout=1))
 
         motor_status = 1
 
