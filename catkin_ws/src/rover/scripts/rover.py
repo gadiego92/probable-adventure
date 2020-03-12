@@ -2,22 +2,22 @@
 import rospy
 
 from robot import Robot
-from rover_msgs.msg import Commands, Remote
+from rover_msgs.msg import Commands, Teleoperation
 
 global robot
 robot = Robot()
 
 
-def joy_callback(remote_message):
+def joy_callback(teleoperation_message):
     """
-    Callback function called when a Remote message is received from /remote_topic topic
+    Callback function called when a Teleoperation message is received from /teleop_topic topic
 
-    :param list remote_message: List with Remote parameters
+    :param list teleoperation_message: List with Teleoperation parameters
     """
 
     command = Commands()
     # Generate commands
-    out_cmds = robot.generateCommands(remote_message.vel, remote_message.steering)
+    out_cmds = robot.generateCommands(teleoperation_message.vel, teleoperation_message.steering)
     # Set drive motors values
     command.drive_motor = out_cmds[0]
     # Set corner motors values
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     rospy.loginfo("Starting the rover node")
 
     pub = rospy.Publisher("/commands_topic", Commands, queue_size=1)
-    joy_sub = rospy.Subscriber("/remote_topic", Remote, joy_callback)
+    joy_sub = rospy.Subscriber("/teleop_topic", Teleoperation, joy_callback)
 
     rate = rospy.Rate(10)
 

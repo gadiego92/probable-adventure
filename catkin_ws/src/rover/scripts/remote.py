@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from sensor_msgs.msg import Joy
-from rover_msgs.msg import Remote
+from rover_msgs.msg import Teleoperation
 
 import math
 
@@ -30,7 +30,7 @@ def callback(joy_message):
     right_x = -joy_message.axes[3]
     right_y = joy_message.axes[4]
 
-    joy_out = Remote()
+    joy_out = Teleoperation()
     joy_out.x = set_speed(right_y)
     joy_out.y = set_steering(left_x, left_y)
 
@@ -136,6 +136,6 @@ if __name__ == "__main__":
     rospy.loginfo("Starting the remote node")
 
     sub = rospy.Subscriber("/joy", Joy, callback)
-    pub = rospy.Publisher("/remote_topic", Remote, queue_size=1)
+    pub = rospy.Publisher("/teleop_topic", Teleoperation, queue_size=1)
 
     rospy.spin()
