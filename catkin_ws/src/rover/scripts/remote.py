@@ -73,13 +73,13 @@ def set_steering(x, y):
 
     # Convert negative angle to corresponding positive
     if theta < 0:
-        theta = -1 * theta
+        theta = -theta
 
     # Normalize radius angle value
     radius = normalize_values_100(theta, old_min, old_max)
 
     # Change value sign [left(-), right(+)]
-    return -1 * radius
+    return -radius
 
 
 def cartesian2polar(x, y):
