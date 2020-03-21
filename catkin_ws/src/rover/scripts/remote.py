@@ -99,7 +99,7 @@ def cartesian2polar(x, y):
         # Go front [0 - 180]
         theta = 90
 
-    return polar,  theta
+    return polar, theta
 
 
 def normalize_values_100(old_value, old_min, old_max):
