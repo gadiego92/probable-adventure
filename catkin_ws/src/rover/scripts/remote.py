@@ -64,6 +64,10 @@ def set_steering(x, y):
     old_min = 0
     old_max = 180
 
+    # If there is not steering don't calculate anything
+    if x == 0 and y == 0:
+        return 0
+
     # Convert cartesian coordinates to polar coordinates
     polar, theta = cartesian2polar(x, y)
 
