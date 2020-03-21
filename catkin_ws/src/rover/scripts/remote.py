@@ -30,11 +30,11 @@ def callback(joy_message):
     right_x = -joy_message.axes[3]
     right_y = joy_message.axes[4]
 
-    joy_out = Teleoperation()
-    joy_out.x = set_speed(right_y)
-    joy_out.y = set_steering(left_x, left_y)
+    teleoperation = Teleoperation()
+    teleoperation.speed = set_speed(right_y)
+    teleoperation.steering = set_steering(left_x, left_y)
 
-    pub.publish(joy_out)
+    pub.publish(teleoperation)
 
 
 def set_speed(y):
