@@ -20,9 +20,8 @@ class Robot():
         self.d3 = float(distances[2])
         self.d4 = float(distances[3])
 
-        # to change when getting Mc thread lock to work
-        enc_min_raw = rospy.get_param("enc_min", 0)
-        enc_max_raw = rospy.get_param("enc_max", 1000)
+        enc_min_raw = rospy.get_param("enc_min", 250)
+        enc_max_raw = rospy.get_param("enc_max", 750)
 
         enc_min_int = int(enc_min_raw)
         enc_max_int = int(enc_max_raw)
@@ -30,6 +29,12 @@ class Robot():
         self.enc_min = enc_min_int
         self.enc_max = enc_max_int
         self.mids = (self.enc_max + self.enc_min) / 2
+
+        # Speed [-100, +100] * 4 = [-400, +400]
+        self.max_speed = 4
+        #  Radius from 255 (0 degrees) to 55 centimeters (45 degrees)
+        self.max_radius = 255
+        self.min_radius = 55
 
     @staticmethod
     def deg2tick(deg, e_min, e_max):
@@ -65,10 +70,15 @@ class Robot():
 
         if (abs(r) <= 5):
             # No turning radius, all wheels same speed
-            return [v] * 6
+            if (r < 0):
+                # Go back
+                velocity = [-v, -v, -v, v, v, v]
+            else:
+                # Go ahead
+                velocity = [v, v, v, -v, -v, -v]
         else:
-            # Get radius in centimeters (555 - 55)
-            radius = 555 - ((500 * abs(r)) / 100.0)
+            # Get radius in centimeters (self.max_radius (255) to self.min_radius (55))
+            radius = self.max_radius - (((self.max_radius - self.min_radius) * abs(r)) / 100.0)
 
             a = math.pow(self.d2, 2)  # Back - D2
             b = math.pow(self.d3, 2)  # Front - D3
@@ -87,62 +97,73 @@ class Robot():
                 rx = f
 
             # Get speed of each wheel
-            v1 = int(v * (math.sqrt(b + c)) / rx)
-            v2 = int(v * (f / rx))
-            v3 = int(v * (math.sqrt(a + c)) / rx)
-            v4 = int((v * math.sqrt(b + d)) / rx)
-            v5 = int(v * (e / rx))
-            v6 = int((v * math.sqrt(a + d)) / rx)
+            abs_v1 = int(abs(v) * (math.sqrt(b + c)) / rx)
+            abs_v2 = int(abs(v) * (f / rx))
+            abs_v3 = int(abs(v) * (math.sqrt(a + c)) / rx)
+            abs_v4 = int((abs(v) * math.sqrt(b + d)) / rx)
+            abs_v5 = int(abs(v) * (e / rx))
+            abs_v6 = int((abs(v) * math.sqrt(a + d)) / rx)
 
-            if (r < 0):
-                # Turn Left
-                velocity = [v4, v5, v6, v1, v2, v3]
-            elif (r > 0):
-                # Turn Right
-                velocity = [v1, v2, v3, v4, v5, v6]
+            if (v < 0):
+                # Go back
+                if (r < 0):
+                    # Turn Left
+                    velocity = [-abs_v4, -abs_v5, -abs_v6, abs_v1, abs_v2, abs_v3]
+                else:
+                    # Turn Right
+                    velocity = [-abs_v1, -abs_v2, -abs_v3, abs_v4, abs_v5, abs_v6]
+            else:
+                # Go ahead
+                if (r < 0):
+                    # Turn Left
+                    velocity = [abs_v4, abs_v5, abs_v6, -abs_v1, -abs_v2, -abs_v3]
+                else:
+                    # Turn Right
+                    velocity = [abs_v1, abs_v2, abs_v3, -abs_v4, -abs_v5, -abs_v6]
 
-            return velocity
+        speed = [self.max_speed * i for i in velocity]
+
+        # Set the speeds between the range [-max_speed, +max_speed]
+        return speed
 
     def calculateTargetDeg(self, radius):
         """
         Takes a turning radius and calculates what angle [degrees] each corner should be at
 
-        :param int radius: Radius drive command, ranges from -100 (turning left) to 100 (turning right)
+        :param int radius: Radius drive command, ranges from -100 (turning left) to +100 (turning right)
         """
 
-        # Scaled from 555 to 55 centimeters
+        # Scaled from self.max_radius (255) to self.min_radius (55) centimeters
         if radius == 0:
-            r = 555
+            r = self.max_radius
         elif -100 <= radius <= 100:
-            r = 555 - abs(radius) * (555 / 100)
+            r = self.max_radius - abs(radius) * int(self.max_radius / 100)
         else:
-            r = 555
+            r = self.max_radius
 
-        if r == 555:
+        if r == self.max_radius:
             return [0] * 4
 
         # Turn Right - Turn Left
         # Front Left - Front Right
-        ang1 = int(math.degrees(math.atan(self.d3 / (abs(r) + self.d1))))
+        ang7 = int(math.degrees(math.atan(self.d3 / (abs(r) + self.d1))))
         # Front Right - Front Left
-        ang2 = int(math.degrees(math.atan(self.d3 / (abs(r) - self.d1))))
+        ang8 = int(math.degrees(math.atan(self.d3 / (abs(r) - self.d1))))
         # Back Left - Back Right
-        ang3 = int(math.degrees(math.atan(self.d2 / (abs(r) + self.d1))))
+        ang9 = int(math.degrees(math.atan(self.d2 / (abs(r) + self.d1))))
         # Back Right - Back Left
-        ang4 = int(math.degrees(math.atan(self.d2 / (abs(r) - self.d1))))
+        ang10 = int(math.degrees(math.atan(self.d2 / (abs(r) - self.d1))))
 
-        angles = [ang1, ang2, ang3, ang4]
-        print(angles)
         # rospy.loginfo( angles )
 
-        if radius > 0:
-            # Turn Right
-            print(ang1, ang2, -ang3, -ang4)
-            return [ang1, ang2, -ang3, -ang4]
-        else:
+        if radius < 0:
             # Turn Left
-            print(-ang2, -ang1, ang4, ang3)
-            return [-ang2, -ang1, ang4, ang3]
+            print(-ang8, -ang7, ang10, ang9)
+            return [-ang8, -ang7, ang10, ang9]
+        else:
+            # Turn Right
+            print(ang7, ang8, -ang9, -ang10)
+            return [ang7, ang8, -ang9, -ang10]
 
     def calculateTargetTick(self, tar_enc):
         """
