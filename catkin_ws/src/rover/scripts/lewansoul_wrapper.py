@@ -6,18 +6,17 @@ import serial
 
 from lewansoul import ServoController
 
+MOTOR_LEFT_FRONT = 1
+MOTOR_LEFT_MIDDLE = 2
+MOTOR_LEFT_BACK = 3
+MOTOR_RIGHT_FRONT = 4
+MOTOR_RIGHT_MIDDLE = 5
+MOTOR_RIGHT_BACK = 6
 
-SERVO_LEFT_FRONT = 1
-SERVO_RIGHT_FRONT = 2
-SERVO_LEFT_MIDDLE = 3
-SERVO_RIGHT_MIDDLE = 4
-SERVO_LEFT_BACK = 5
-SERVO_RIGHT_BACK = 6
-
-SERVO_FRONT_LEFT = 7
-SERVO_FRONT_RIGHT = 8
-SERVO_BACK_LEFT = 9
-SERVO_BACK_RIGHT = 10
+SERVO_LEFT_FRONT = 7
+SERVO_RIGHT_FRONT = 8
+SERVO_LEFT_BACK = 9
+SERVO_RIGHT_BACK = 10
 
 
 class MotorControllers(object):
@@ -58,10 +57,10 @@ class MotorControllers(object):
         :param list corner_ticks: A list of ticks for each of the corner motors to move to
         """
 
-        servo_front_left = self.lw_controller.servo(SERVO_FRONT_LEFT)
-        servo_front_right = self.lw_controller.servo(SERVO_FRONT_RIGHT)
-        servo_back_left = self.lw_controller.servo(SERVO_BACK_LEFT)
-        servo_back_right = self.lw_controller.servo(SERVO_BACK_RIGHT)
+        servo_front_left = self.lw_controller.servo(SERVO_LEFT_FRONT)
+        servo_front_right = self.lw_controller.servo(SERVO_RIGHT_FRONT)
+        servo_back_left = self.lw_controller.servo(SERVO_LEFT_BACK)
+        servo_back_right = self.lw_controller.servo(SERVO_RIGHT_BACK)
 
         servo_front_left.move_prepare(corner_ticks[0])
         servo_front_right.move_prepare(corner_ticks[1])
@@ -77,12 +76,12 @@ class MotorControllers(object):
         :param list drive_ticks: A list of ticks for each of the drice motors to speed to
         """
 
-        self.lw_controller.set_motor_mode(SERVO_LEFT_FRONT, drive_ticks[0])
-        self.lw_controller.set_motor_mode(SERVO_LEFT_MIDDLE, drive_ticks[1])
-        self.lw_controller.set_motor_mode(SERVO_LEFT_BACK, drive_ticks[2])
-        self.lw_controller.set_motor_mode(SERVO_RIGHT_FRONT, drive_ticks[3])
-        self.lw_controller.set_motor_mode(SERVO_RIGHT_MIDDLE, drive_ticks[4])
-        self.lw_controller.set_motor_mode(SERVO_RIGHT_BACK, drive_ticks[5])
+        self.lw_controller.set_motor_mode(MOTOR_LEFT_FRONT, drive_ticks[0])
+        self.lw_controller.set_motor_mode(MOTOR_LEFT_MIDDLE, drive_ticks[1])
+        self.lw_controller.set_motor_mode(MOTOR_LEFT_BACK, drive_ticks[2])
+        self.lw_controller.set_motor_mode(MOTOR_RIGHT_FRONT, drive_ticks[3])
+        self.lw_controller.set_motor_mode(MOTOR_RIGHT_MIDDLE, drive_ticks[4])
+        self.lw_controller.set_motor_mode(MOTOR_RIGHT_BACK, drive_ticks[5])
 
     def killMotors(self):
         """
