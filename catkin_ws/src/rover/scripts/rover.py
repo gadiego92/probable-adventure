@@ -17,7 +17,7 @@ def joy_callback(teleoperation_message):
 
     command = Commands()
     # Generate commands
-    out_cmds = robot.generateCommands(teleoperation_message.vel, teleoperation_message.steering)
+    out_cmds = robot.generateCommands(teleoperation_message.speed, teleoperation_message.steering)
     # Set drive motors values
     command.drive_motor = out_cmds[0]
     # Set corner motors values
