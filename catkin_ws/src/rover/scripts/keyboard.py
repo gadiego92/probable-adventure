@@ -27,7 +27,7 @@ Rover Control Panel!
 Moving around:
     q (max front speed) w (forward) e (align)
     a (left)            s (stop)    d (right)
-    z (max back speed)  x (back)    c (max right)   v (max right)
+    z (max back speed)  x (back)    c (max left)   v (max right)
 
 w/x : increase/decrease speed ( ~ 0.05 )
 a/d : increase/decrease angle (~ 5 grades )
