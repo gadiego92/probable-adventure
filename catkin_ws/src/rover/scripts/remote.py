@@ -27,7 +27,7 @@ def callback(joy_message):
 
     left_x = -joy_message.axes[0]
     left_y = joy_message.axes[1]
-    right_x = -joy_message.axes[3]
+    #  right_x = -joy_message.axes[3]
     right_y = joy_message.axes[4]
 
     teleoperation = Teleoperation()
