@@ -20,11 +20,11 @@ def callback(command_message):
 	global mutex
 
 	rospy.loginfo(command_message)
-	
+
 	while mutex:
 		time.sleep(0.001)
 		print "command_message are being buffered"
-	
+
 	mutex = True
 
 	# Send angle values to corner motors
@@ -32,7 +32,7 @@ def callback(command_message):
 
 	# Send speed values to drive motors
 	motor_controller.sendMotorDuty(command_message.drive_motor)
-	
+
 	mutex = False
 
 def shutdown():
@@ -51,5 +51,5 @@ if __name__ == "__main__":
 	sub = rospy.Subscriber("/commands_topic", Commands, callback)
 
 	rate = rospy.Rate(5)
-	
+
 	rospy.spin()

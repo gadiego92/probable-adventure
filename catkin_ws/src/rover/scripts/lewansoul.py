@@ -132,7 +132,7 @@ class ServoController(object):
 
             if hex(ord(data[-1])) != SERVO_FRAME_HEADER_STRING:
                 continue
-            
+
             # header part 2
             data += read(1)
 
