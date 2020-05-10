@@ -154,8 +154,6 @@ class Robot():
         # Back Right - Back Left
         ang10 = int(math.degrees(math.atan(self.d2 / (abs(r) - self.d1))))
 
-        # rospy.loginfo( angles )
-
         if radius < 0:
             # Turn Left
             print(-ang8, -ang7, ang10, ang9)
@@ -178,7 +176,6 @@ class Robot():
             tick.append(self.deg2tick(tar_enc[i], self.enc_min, self.enc_max))
 
         print(tick)
-        # rospy.loginfo(tick)
 
         return tick
 
