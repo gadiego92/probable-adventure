@@ -1,0 +1,17 @@
+<launch>
+
+    <!-- lewansoul_wrapper.py -->
+    <param name="/baud_rate" type="int" value="115200" />
+	<param name="/motor_controller_device" type="string" value="/dev/ttyUSB0" />
+
+    <!-- robot.py -->
+    <param name="/hardware_distances" type="string" value="23,25.5,28.5,26" />
+    <param name="/enc_min" type="string" value="250" />
+	<param name="/enc_max" type="string" value="750" />
+
+    <!-- Nodes to run the Rover -->
+    <node pkg="rover" name="keyboard_node" type="keyboard.py" respawn="true" />
+    <node pkg="rover" name="motor_controller_node" type="rover.py" respawn="true" />
+    <node pkg="rover" name="rover_node" type="motor_controller.py" respawn="true" />
+
+</launch>
