@@ -91,13 +91,22 @@ class ServoController(object):
         self._lock = threading.RLock()
 
     def _command(self, servo_id, command, params):
-        length = 3 + len(params)
-        checksum = 255 - ((servo_id + length + command + sum(params)) % 256)
+        if type(params) is list:
+            length = 3 + len(params)
+            checksum = 255 - ((servo_id + length + command + sum(params)) % 256)
 
-        command_list = []
-        command_list = [SERVO_FRAME_HEADER, SERVO_FRAME_HEADER, servo_id, length, command]
-        command_list += params
-        command_list += [checksum]
+            command_list = []
+            command_list = [SERVO_FRAME_HEADER, SERVO_FRAME_HEADER, servo_id, length, command]
+            command_list += params
+            command_list += [checksum]
+        else:
+            length = 3 + 1
+            checksum = 255 - ((servo_id + length + command + params) % 256)
+
+            command_list = []
+            command_list = [SERVO_FRAME_HEADER, SERVO_FRAME_HEADER, servo_id, length, command]
+            command_list += [params]
+            command_list += [checksum]
 
         LOGGER.debug("Sending servo control packet: %s", command_list)
 
@@ -192,8 +201,8 @@ class ServoController(object):
 
         self._command(
             servo_id, SERVO_MOVE_TIME_WRITE,
-            (lower_byte(position), higher_byte(position),
-             lower_byte(time), higher_byte(time))
+            [lower_byte(position), higher_byte(position),
+             lower_byte(time), higher_byte(time)]
         )
 
     def get_prepared_move(self, servo_id, timeout=None):
@@ -208,8 +217,8 @@ class ServoController(object):
 
         self._command(
             servo_id, SERVO_MOVE_TIME_WAIT_WRITE,
-            (lower_byte(position), higher_byte(position),
-             lower_byte(time), higher_byte(time))
+            [lower_byte(position), higher_byte(position),
+             lower_byte(time), higher_byte(time)]
         )
 
     def move_start(self, servo_id=SERVO_ID_ALL):
@@ -249,8 +258,8 @@ class ServoController(object):
 
         self._command(
             servo_id, SERVO_ANGLE_LIMIT_WRITE,
-            (lower_byte(min_position), higher_byte(min_position),
-             lower_byte(max_position), higher_byte(max_position))
+            [lower_byte(min_position), higher_byte(min_position),
+             lower_byte(max_position), higher_byte(max_position)]
         )
 
     def get_voltage_limits(self, servo_id, timeout=None):
@@ -264,8 +273,8 @@ class ServoController(object):
 
         self._command(
             servo_id, SERVO_VIN_LIMIT_WRITE,
-            (lower_byte(min_voltage), higher_byte(min_voltage),
-             lower_byte(max_voltage), higher_byte(max_voltage))
+            [lower_byte(min_voltage), higher_byte(min_voltage),
+             lower_byte(max_voltage), higher_byte(max_voltage)]
         )
 
     def get_max_temperature_limit(self, servo_id, timeout=None):
@@ -318,7 +327,7 @@ class ServoController(object):
     def set_servo_mode(self, servo_id):
         self._command(
             servo_id, SERVO_OR_MOTOR_MODE_WRITE,
-            (0, 0, 0, 0)
+            [0, 0, 0, 0]
         )
 
     def set_motor_mode(self, servo_id, speed=0):
@@ -329,13 +338,13 @@ class ServoController(object):
 
         self._command(
             servo_id, SERVO_OR_MOTOR_MODE_WRITE,
-            (1, 0, lower_byte(speed), higher_byte(speed))
+            [1, 0, lower_byte(speed), higher_byte(speed)]
         )
 
     def is_motor_on(self, servo_id, timeout=None):
         response = self._query(servo_id, SERVO_LOAD_OR_UNLOAD_READ, timeout=timeout)
 
-        return response[2] == 1
+        return response[2][0] == 1
 
     def motor_on(self, servo_id):
         self._command(servo_id, SERVO_LOAD_OR_UNLOAD_WRITE, 1)
