@@ -62,9 +62,9 @@ if __name__ == "__main__":
     settings = termios.tcgetattr(sys.stdin)
 
     # Register client node with the master under keyboard_node name
-    rospy.init_node('keyboard_node')
+    rospy.init_node("keyboard_node")
     # Register keyboard_node node as a publisher of rover_motion ROS topic
-    pub = rospy.Publisher('/teleop_topic', Teleoperation, queue_size=1)
+    pub = rospy.Publisher("/teleop_topic", Teleoperation, queue_size=1)
 
     status = 0
     target_speed = SPEED_ZERO
@@ -139,7 +139,7 @@ if __name__ == "__main__":
             else:
                 if (key == '\x03'):
                     # Break infinite while loop
-                    print('Control + C pressed')
+                    print("Control + C pressed")
                     break
 
             # After 20 keystrokes show the Rover Control Panel
@@ -160,7 +160,7 @@ if __name__ == "__main__":
     finally:
         # Instantiate and publish a ROS Message (Teleoperation)
         # Stop (SPEED_ZERO) and align the wheels (ANGLE_ZERO)
-        print('Finally')
+        print("Finally")
         teleoperation = Teleoperation()
         teleoperation.speed = SPEED_ZERO
         teleoperation.steering = ANGLE_ZERO
