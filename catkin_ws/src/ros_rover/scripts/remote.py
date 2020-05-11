@@ -1,9 +1,11 @@
 #!/usr/bin/env python
-import rospy
-from sensor_msgs.msg import Joy
-from ros_rover.msg import Teleoperation
 
 import math
+
+import rospy
+from sensor_msgs.msg import Joy
+
+from ros_rover.msg import Teleoperation
 
 
 def callback(joy_message):

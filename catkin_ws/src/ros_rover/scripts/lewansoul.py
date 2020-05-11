@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import logging
 import threading
 from functools import partial
