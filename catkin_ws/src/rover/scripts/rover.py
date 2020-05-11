@@ -2,7 +2,7 @@
 import rospy
 
 from robot import Robot
-from rover_msgs.msg import Commands, Teleoperation
+from rover.msg import Commands, Teleoperation
 
 global robot
 robot = Robot()

@@ -4,7 +4,7 @@ import time
 import rospy
 
 from lewansoul_wrapper import MotorControllers
-from rover_msgs.msg import Commands
+from rover.msg import Commands
 
 motor_controller = MotorControllers()
 mutex = False
