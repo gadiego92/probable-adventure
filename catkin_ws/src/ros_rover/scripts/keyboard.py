@@ -8,7 +8,7 @@ import tty
 
 import rospy
 
-from rover.msg import Teleoperation
+from ros_rover.msg import Teleoperation
 
 # Speed values
 SPEED_STEP_SIZE = 5

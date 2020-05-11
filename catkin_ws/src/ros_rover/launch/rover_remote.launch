@@ -10,8 +10,9 @@
 	<param name="/enc_max" type="string" value="750" />
 
     <!-- Nodes to run the Rover -->
-    <node pkg="rover" name="keyboard_node" type="keyboard.py" respawn="true" />
-    <node pkg="rover" name="motor_controller_node" type="rover.py" respawn="true" />
-    <node pkg="rover" name="rover_node" type="motor_controller.py" respawn="true" />
+    <node pkg="joy" name="joy" type="joy_node" respawn="false" />
+    <node pkg="ros_rover" name="remote_node" type="remote.py" respawn="true" />
+    <node pkg="ros_rover" name="motor_controller_node" type="rover.py" respawn="true" />
+    <node pkg="ros_rover" name="rover_node" type="motor_controller.py" respawn="true" />
 
 </launch>

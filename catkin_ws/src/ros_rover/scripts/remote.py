@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from sensor_msgs.msg import Joy
-from rover.msg import Teleoperation
+from ros_rover.msg import Teleoperation
 
 import math
 
