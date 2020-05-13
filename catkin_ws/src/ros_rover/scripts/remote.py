@@ -25,36 +25,38 @@ def callback(joy_message):
     # Front	[1] +
     # Back	[1] -
 
-    # RIGHT
-    # Left 	[3] +
-    # Right [3] -
-    # Front	[4] +
-    # Back	[4] -
-
     left_x = -joy_message.axes[0]
     left_y = joy_message.axes[1]
-    #  right_x = -joy_message.axes[3]
-    right_y = joy_message.axes[4]
+    left_trigger = joy_message.axes[2]
+    square_button = joy_message.buttons[3]
 
     teleoperation = Teleoperation()
-    teleoperation.speed = set_speed(right_y)
+    teleoperation.speed = set_speed(left_trigger, square_button)
     teleoperation.steering = set_steering(left_x, left_y)
 
     pub.publish(teleoperation)
 
 
-def set_speed(y):
+def set_speed(left_trigger, square_button):
     """
     Set speed [-100, +100] from right joystick values [x, y]
 
-    :param float y: Y axe joystick value [-1, 1]
+    :param float left_trigger: Y axe joystick value [-1, 1]
+    :param int square_button: Square button 0 or 1
     """
 
     old_min = -1
     old_max = 1
 
+    # [-1, 1] to [0, 100]
+    tmp_y = (1 - left_trigger) / 2
+
     # Normalize speed value
-    speed = normalize_values_100(y, old_min, old_max)
+    speed = normalize_values_100(tmp_y, old_min, old_max)
+
+    # if square button is pressed, change sign to go back
+    if square_button:
+        speed *= -1
 
     return speed
 
