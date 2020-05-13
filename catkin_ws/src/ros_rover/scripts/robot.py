@@ -73,12 +73,8 @@ class Robot(object):
 
         if abs(r) <= 5:
             # No turning radius, all wheels same speed
-            if r < 0:
-                # Go back
-                velocity = [-v, -v, -v, v, v, v]
-            else:
-                # Go ahead
-                velocity = [v, v, v, -v, -v, -v]
+            # Go ahead/Go back
+            velocity = [v, v, v, -v, -v, -v]
         else:
             # Get radius in centimeters (MAX_RADIUS (255) to MIN_RADIUS (55))
             radius = MAX_RADIUS - (((MAX_RADIUS - MIN_RADIUS) * abs(r)) / 100.0)
