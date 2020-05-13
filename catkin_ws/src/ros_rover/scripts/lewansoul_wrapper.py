@@ -94,6 +94,6 @@ class MotorControllers(object):
         """
 
         # Align corner motors
-        self.corner_to_position([0, 0, 0, 0])
+        self.corner_to_position([500, 500, 500, 500])
         # Stop drive motors
         self.send_motor_duty([0, 0, 0, 0, 0, 0])
