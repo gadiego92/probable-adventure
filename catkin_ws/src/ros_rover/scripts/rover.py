@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
+"""
+Rover node.
+"""
+
 import rospy
 
-from robot import Robot
 from ros_rover.msg import Commands, Teleoperation
-
-global robot
-robot = Robot()
+from robot import Robot
 
 
 def joy_callback(teleoperation_message):
@@ -16,9 +17,12 @@ def joy_callback(teleoperation_message):
     :param list teleoperation_message: List with Teleoperation parameters
     """
 
+    # Create Robot instance
+    robot = Robot()
+    # Create Commands message
     command = Commands()
     # Generate commands
-    out_cmds = robot.generateCommands(teleoperation_message.speed, teleoperation_message.steering)
+    out_cmds = robot.generate_commands(teleoperation_message.speed, teleoperation_message.steering)
     # Set drive motors values
     command.drive_motor = out_cmds[0]
     # Set corner motors values

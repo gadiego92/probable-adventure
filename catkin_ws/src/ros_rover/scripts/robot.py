@@ -1,16 +1,25 @@
 #!/usr/bin/env python
 
+"""
+Robot class.
+"""
+
 import math
-import time
 
 import rospy
 
+# Speed [-100, +100] * 4 = [-400, +400]
+SPEED_FACTOR = 4
+# Radius from 255 (0 degrees) to 55 centimeters (45 degrees)
+MAX_RADIUS = 255
+MIN_RADIUS = 55
 
-class Robot():
+class Robot(object):
     """
     Robot class contains all the math and motor control algorithms to move the rover
 
-    In order to call command the robot the only method necessary is the sendCommands() method with drive velocity and turning amount
+    In order to call command the robot the only method necessary is the sendCommands()
+    method with drive velocity and turning amount
     """
 
     def __init__(self):
@@ -30,14 +39,8 @@ class Robot():
         self.enc_max = enc_max_int
         self.mids = (self.enc_max + self.enc_min) / 2
 
-        # Speed [-100, +100] * 4 = [-400, +400]
-        self.max_speed = 4
-        #  Radius from 255 (0 degrees) to 55 centimeters (45 degrees)
-        self.max_radius = 255
-        self.min_radius = 55
-
     @staticmethod
-    def deg2tick(deg, e_min, e_max):
+    def deg_to_tick(deg, e_min, e_max):
         """
         Converts a degrees to tick value
 
@@ -57,7 +60,7 @@ class Robot():
 
         return temp
 
-    def calculateVelocity(self, v, r):
+    def calculate_velocity(self, v, r):
         """
         Returns a list of speeds for each individual drive motor based on current turning radius
 
@@ -65,20 +68,20 @@ class Robot():
         :param int r: Current turning radius range from -100 to 100
         """
 
-        if (v == 0):
+        if v == 0:
             return [0] * 6
 
-        if (abs(r) <= 5):
+        if abs(r) <= 5:
             # No turning radius, all wheels same speed
-            if (r < 0):
+            if r < 0:
                 # Go back
                 velocity = [-v, -v, -v, v, v, v]
             else:
                 # Go ahead
                 velocity = [v, v, v, -v, -v, -v]
         else:
-            # Get radius in centimeters (self.max_radius (255) to self.min_radius (55))
-            radius = self.max_radius - (((self.max_radius - self.min_radius) * abs(r)) / 100.0)
+            # Get radius in centimeters (MAX_RADIUS (255) to MIN_RADIUS (55))
+            radius = MAX_RADIUS - (((MAX_RADIUS - MIN_RADIUS) * abs(r)) / 100.0)
 
             a = math.pow(self.d2, 2)  # Back - D2
             b = math.pow(self.d3, 2)  # Front - D3
@@ -89,7 +92,7 @@ class Robot():
             e = radius - self.d4  # Center - Closest
             f = radius + self.d4  # Center - Farthest
 
-            if (radius < 111):
+            if radius < 111:
                 # Front - Farthest wheel is the Farthest
                 rx = math.sqrt(b + c)
             else:
@@ -104,9 +107,9 @@ class Robot():
             abs_v5 = int(abs(v) * (e / rx))
             abs_v6 = int((abs(v) * math.sqrt(a + d)) / rx)
 
-            if (v < 0):
+            if v < 0:
                 # Go back
-                if (r < 0):
+                if r < 0:
                     # Turn Left
                     velocity = [-abs_v4, -abs_v5, -abs_v6, abs_v1, abs_v2, abs_v3]
                 else:
@@ -114,34 +117,34 @@ class Robot():
                     velocity = [-abs_v1, -abs_v2, -abs_v3, abs_v4, abs_v5, abs_v6]
             else:
                 # Go ahead
-                if (r < 0):
+                if r < 0:
                     # Turn Left
                     velocity = [abs_v4, abs_v5, abs_v6, -abs_v1, -abs_v2, -abs_v3]
                 else:
                     # Turn Right
                     velocity = [abs_v1, abs_v2, abs_v3, -abs_v4, -abs_v5, -abs_v6]
 
-        speed = [self.max_speed * i for i in velocity]
+        speed = [SPEED_FACTOR * i for i in velocity]
 
         # Set the speeds between the range [-max_speed, +max_speed]
         return speed
 
-    def calculateTargetDeg(self, radius):
+    def calculate_target_deg(self, radius):
         """
         Takes a turning radius and calculates what angle [degrees] each corner should be at
 
-        :param int radius: Radius drive command, ranges from -100 (turning left) to +100 (turning right)
+        :param int radius: Radius drive command, ranges from -100 (left) to +100 (right)
         """
 
-        # Scaled from self.max_radius (255) to self.min_radius (55) centimeters
+        # Scaled from MAX_RADIUS (255) to MIN_RADIUS (55) centimeters
         if radius == 0:
-            r = self.max_radius
+            r = MAX_RADIUS
         elif -100 <= radius <= 100:
-            r = self.max_radius - abs(radius) * int(self.max_radius / 100)
+            r = MAX_RADIUS - abs(radius) * int(MAX_RADIUS / 100)
         else:
-            r = self.max_radius
+            r = MAX_RADIUS
 
-        if r == self.max_radius:
+        if r == MAX_RADIUS:
             return [0] * 4
 
         # Turn Right - Turn Left
@@ -157,13 +160,15 @@ class Robot():
         if radius < 0:
             # Turn Left
             print(-ang8, -ang7, ang10, ang9)
-            return [-ang8, -ang7, ang10, ang9]
+            angles = [-ang8, -ang7, ang10, ang9]
         else:
             # Turn Right
             print(ang7, ang8, -ang9, -ang10)
-            return [ang7, ang8, -ang9, -ang10]
+            angles = [ang7, ang8, -ang9, -ang10]
 
-    def calculateTargetTick(self, tar_enc):
+        return angles
+
+    def calculate_target_tick(self, tar_enc):
         """
         Takes the target angle and gets what encoder tick that value is for position control
 
@@ -173,13 +178,13 @@ class Robot():
         tick = []
 
         for i in range(4):
-            tick.append(self.deg2tick(tar_enc[i], self.enc_min, self.enc_max))
+            tick.append(self.deg_to_tick(tar_enc[i], self.enc_min, self.enc_max))
 
-        print(tick)
+        print tick
 
         return tick
 
-    def generateCommands(self, v, r):
+    def generate_commands(self, v, r):
         """
         Driving method for the Rover, rover will not do any commands if any motor controller
         throws an error
@@ -189,8 +194,8 @@ class Robot():
         """
 
         # Get speed of each wheel
-        speed = self.calculateVelocity(v, r)
+        speed = self.calculate_velocity(v, r)
         # Get turn of each wheel measured in ticks
-        ticks = self.calculateTargetTick(self.calculateTargetDeg(r))
+        ticks = self.calculate_target_tick(self.calculate_target_deg(r))
 
         return (speed, ticks)

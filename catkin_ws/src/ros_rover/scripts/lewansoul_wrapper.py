@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Lewansoul wrapper.
+"""
+
 import logging
 
 import rospy
@@ -51,7 +55,7 @@ class MotorControllers(object):
         else:
             raise Exception("Unable to establish connection to Lewansoul motor controllers")
 
-    def cornerToPosition(self, corner_ticks):
+    def corner_to_position(self, corner_ticks):
         """
         Method to send position commands to the corner motors
 
@@ -70,7 +74,7 @@ class MotorControllers(object):
 
         self.lw_controller.move_start()
 
-    def sendMotorDuty(self, drive_ticks):
+    def send_motor_duty(self, drive_ticks):
         """
         Method to send position commands to the drive motors
 
@@ -84,12 +88,12 @@ class MotorControllers(object):
         self.lw_controller.set_motor_mode(MOTOR_RIGHT_MIDDLE, drive_ticks[4])
         self.lw_controller.set_motor_mode(MOTOR_RIGHT_BACK, drive_ticks[5])
 
-    def killMotors(self):
+    def kill_motors(self):
         """
         Stops drive motors and align corner motors
         """
 
         # Align corner motors
-        self.cornerToPosition([0, 0, 0, 0])
+        self.corner_to_position([0, 0, 0, 0])
         # Stop drive motors
-        self.sendMotorDuty([0, 0, 0, 0, 0, 0])
+        self.send_motor_duty([0, 0, 0, 0, 0, 0])

@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Lewansoul interface.
+"""
+
 import logging
 import threading
 from functools import partial
@@ -61,6 +65,10 @@ def clamp(range_min, range_max, value):
 
 
 class TimeoutError(RuntimeError):
+    """
+    TimeoutError class.
+    """
+
     pass
 
 
@@ -68,6 +76,10 @@ LOGGER = logging.getLogger("lewansoul.servos.lx16a")
 
 
 class Servo(object):
+    """
+    Servo class.
+    """
+
     def __init__(self, controller, servo_id):
         self.__dict__.update({
             "_controller": controller,
@@ -87,13 +99,17 @@ class Servo(object):
 
 
 class ServoController(object):
+    """
+    ServoController class.
+    """
+
     def __init__(self, serial, timeout=1):
         self._serial = serial
         self._timeout = timeout
         self._lock = threading.RLock()
 
     def _command(self, servo_id, command, params):
-        if type(params) is list:
+        if isinstance(params, list):
             length = 3 + len(params)
             checksum = 255 - ((servo_id + length + command + sum(params)) % 256)
 

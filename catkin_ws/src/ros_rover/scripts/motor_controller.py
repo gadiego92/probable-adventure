@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
+"""
+Motor controller node.
+"""
+
 import time
 
 import rospy
 
-from lewansoul_wrapper import MotorControllers
 from ros_rover.msg import Commands
+from lewansoul_wrapper import MotorControllers
 
 motor_controller = MotorControllers()
 mutex = False
@@ -29,10 +33,10 @@ def callback(command_message):
     mutex = True
 
     # Send angle values to corner motors
-    motor_controller.cornerToPosition(command_message.corner_motor)
+    motor_controller.corner_to_position(command_message.corner_motor)
 
     # Send speed values to drive motors
-    motor_controller.sendMotorDuty(command_message.drive_motor)
+    motor_controller.send_motor_duty(command_message.drive_motor)
 
     mutex = False
 
@@ -43,7 +47,7 @@ def shutdown():
     """
 
     print "Killing motors"
-    motor_controller.killMotors()
+    motor_controller.kill_motors()
 
 
 if __name__ == "__main__":

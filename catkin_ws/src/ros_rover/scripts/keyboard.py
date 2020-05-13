@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Keyboard node.
+"""
+
 import select
 import sys
 import termios
@@ -37,7 +41,7 @@ CTRL-C to quit
 """
 
 
-def getKey():
+def get_key():
     """
     Return key pressed
     """
@@ -46,15 +50,16 @@ def getKey():
     select.select([sys.stdin], [], [], 0)
     key = sys.stdin.read(1)
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+
     return key
 
 
-def print_movement(key, target_speed, target_angle):
+def print_movement(key, t_speed, t_angle):
     """
     Print a string with the current speed and angle (degrees and value)
     """
 
-    print("%s pressed\ncurrently:\tspeed %s\t angle %s" %(key, target_speed, target_angle))
+    print "%s pressed\ncurrently:\tspeed %s\t angle %s" %(key, t_speed, t_angle)
 
 
 if __name__ == "__main__":
@@ -70,80 +75,82 @@ if __name__ == "__main__":
     target_angle = ANGLE_ZERO
 
     try:
-        print(msg)
+        print msg
 
-        while(1):
-            key = getKey().upper()
+        while 1:
+            key_pressed = get_key().upper()
 
-            if key == 'W':
+            if key_pressed == 'W':
                 # Go Forward
-                # If target_speed did not have reached the +SPEED_MAX or if it has reached the -SPEED_MAX
+                # If target_speed did not have reached the +SPEED_MAX
+                # or if it has reached the -SPEED_MAX
                 if abs(target_speed) < SPEED_MAX or target_speed == -SPEED_MAX:
                     target_speed = target_speed + SPEED_STEP_SIZE
 
-                print_movement(key, target_speed, target_angle)
+                print_movement(key_pressed, target_speed, target_angle)
                 status = status + 1
-            elif key == 'S':
+            elif key_pressed == 'S':
                 # Stop
                 target_speed = SPEED_ZERO
-                print_movement(key, target_speed, target_angle)
+                print_movement(key_pressed, target_speed, target_angle)
                 status = status + 1
-            elif key == 'X':
+            elif key_pressed == 'X':
                 # Go Back
-                # If target_speed did not have reached the -SPEED_MAX or if it has reached the +SPEED_MAX
+                # If target_speed did not have reached the -SPEED_MAX
+                # or if it has reached the +SPEED_MAX
                 if abs(target_speed) < SPEED_MAX or target_speed == SPEED_MAX:
                     target_speed = target_speed - SPEED_STEP_SIZE
 
-                print_movement(key, target_speed, target_angle)
+                print_movement(key_pressed, target_speed, target_angle)
                 status = status + 1
-            elif key == 'A':
+            elif key_pressed == 'A':
                 # Turn Left
                 if target_angle > ANGLE_MIN:
                     target_angle = target_angle - ANGLE_STEP_SIZE
 
-                print_movement(key, target_speed, target_angle)
+                print_movement(key_pressed, target_speed, target_angle)
                 status = status + 1
-            elif key == 'D':
+            elif key_pressed == 'D':
                 # Turn Right
                 if target_angle < ANGLE_MAX:
                     target_angle = target_angle + ANGLE_STEP_SIZE
 
-                print_movement(key, target_speed, target_angle)
+                print_movement(key_pressed, target_speed, target_angle)
                 status = status + 1
-            elif key == 'E':
+            elif key_pressed == 'E':
                 # Align Wheels
                 target_angle = ANGLE_ZERO
-                print_movement(key, target_speed, target_angle)
+                print_movement(key_pressed, target_speed, target_angle)
                 status = status + 1
-            elif key == 'Q':
+            elif key_pressed == 'Q':
                 # Go Forward (+SPEED_MAX)
                 target_speed = SPEED_MAX
-                print_movement(key, target_speed, target_angle)
+                print_movement(key_pressed, target_speed, target_angle)
                 status = status + 1
-            elif key == 'Z':
+            elif key_pressed == 'Z':
                 # Go Back (-SPEED_MAX)
                 target_speed = -SPEED_MAX
-                print_movement(key, target_speed, target_angle)
+                print_movement(key_pressed, target_speed, target_angle)
                 status = status + 1
-            elif key == 'C':
+            elif key_pressed == 'C':
                 # Turn Left (ANGLE_MIN)
                 target_angle = ANGLE_MIN
-                print_movement(key, target_speed, target_angle)
+                print_movement(key_pressed, target_speed, target_angle)
                 status = status + 1
-            elif key == 'V':
+            elif key_pressed == 'V':
                 # Turn Right (ANGLE_MAX)
                 target_angle = ANGLE_MAX
-                print_movement(key, target_speed, target_angle)
+                print_movement(key_pressed, target_speed, target_angle)
                 status = status + 1
             else:
-                if (key == '\x03'):
+                if key_pressed == '\x03':
                     # Break infinite while loop
-                    print("Control + C pressed")
+                    print "Control + C pressed"
                     break
 
             # After 20 keystrokes show the Rover Control Panel
             if status == 20:
-                print(msg)
+                print msg
                 status = 0
 
             # Instantiate and publish a ROS Message (Teleoperation)
@@ -152,14 +159,14 @@ if __name__ == "__main__":
             teleoperation.steering = target_angle
             pub.publish(teleoperation)
 
-    except Exception as e:
-        """ Exceptions """
-        print("Communications Failed")
+    except:
+        # Exceptions
+        print "Communications Failed"
 
     finally:
         # Instantiate and publish a ROS Message (Teleoperation)
         # Stop (SPEED_ZERO) and align the wheels (ANGLE_ZERO)
-        print("Finally")
+        print "Finally"
         teleoperation = Teleoperation()
         teleoperation.speed = SPEED_ZERO
         teleoperation.steering = ANGLE_ZERO

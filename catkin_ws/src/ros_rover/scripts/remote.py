@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Remote node.
+"""
+
 import math
 
 import rospy
@@ -71,7 +75,8 @@ def set_steering(x, y):
         return 0
 
     # Convert cartesian coordinates to polar coordinates
-    polar, theta = cartesian2polar(x, y)
+    # Ignore polar return value
+    _, theta = cartesian2polar(x, y)
 
     # Convert negative angle to corresponding positive
     if theta < 0:
