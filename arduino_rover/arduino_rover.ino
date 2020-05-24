@@ -40,14 +40,26 @@
 #define DEBUG 1  /*Debug ：print debug value*/
 
 // CONSTANTS
-// Right servos
+// Front left motor
 const byte ID1 = 1;
-// Left servos
+// Front right motor
 const byte ID2 = 2;
-// Front servos
+// Middle left motor
 const byte ID3 = 3;
-// Back servos
+// Middel right motor
 const byte ID4 = 4;
+// Back left motor
+const byte ID5 = 5;
+// Back rigth motor
+const byte ID6 = 6;
+// Front left motor
+const byte ID7 = 7;
+// Front right servo
+const byte ID8 = 8;
+// Back left servo
+const byte ID9 = 9;
+// Back lefft servo
+const byte ID10 = 10;
 // Servo motor pins
 const byte RX_PIN_SERVO = 10;
 const byte TX_PIN_SERVO = 11;
@@ -399,19 +411,29 @@ void setup()
   delay(1000);
 
   // set the data rate for the bluetooth SoftwareSerial port
-  serial_bluetooth.begin(9600);
-  delay(1000);
+//  serial_bluetooth.begin(9600);
+//  delay(1000);
+  SerialServoSetMode(serial_servo, ID1, 1, 0);
+  SerialServoSetMode(serial_servo, ID2, 1, 0);
+  SerialServoSetMode(serial_servo, ID3, 1, 0);
+  SerialServoSetMode(serial_servo, ID4, 1, 0);
+  SerialServoSetMode(serial_servo, ID5, 1, 0);
+  SerialServoSetMode(serial_servo, ID6, 1, 0);
+  SerialServoSetMode(serial_servo, ID7, 0, 0);
+  SerialServoSetMode(serial_servo, ID8, 0, 0);
+  SerialServoSetMode(serial_servo, ID9, 0, 0);
+  SerialServoSetMode(serial_servo, ID10, 0, 0);
 }
 
 void loop()
 {
-  if (serial_bluetooth.available() > 0)
+  if (Serial.available() > 0)
   {
 #ifdef DEBUG
     Serial.println("Serial available");
 #endif
 
-    character = serial_bluetooth.read();
+    character = Serial.read();
 #ifdef DEBUG
     Serial.println(character);
 #endif
@@ -433,8 +455,12 @@ void loop()
 #ifdef DEBUG
       Serial.println(speed);
 #endif
-      SerialServoSetMode(serial_servo, ID1, 1, -speed);
-      SerialServoSetMode(serial_servo, ID2, 1, +speed);
+      SerialServoSetMode(serial_servo, ID2, 1, -speed);
+      SerialServoSetMode(serial_servo, ID4, 1, -speed);
+      SerialServoSetMode(serial_servo, ID6, 1, -speed);
+      SerialServoSetMode(serial_servo, ID1, 1, +speed);
+      SerialServoSetMode(serial_servo, ID3, 1, +speed);
+      SerialServoSetMode(serial_servo, ID5, 1, +speed);
       break;
 
     case 's':
@@ -445,6 +471,10 @@ void loop()
       speed = MIN_SPEED;
       SerialServoSetMode(serial_servo, ID1, 1, speed);
       SerialServoSetMode(serial_servo, ID2, 1, speed);
+      SerialServoSetMode(serial_servo, ID3, 1, speed);
+      SerialServoSetMode(serial_servo, ID4, 1, speed);
+      SerialServoSetMode(serial_servo, ID5, 1, speed);
+      SerialServoSetMode(serial_servo, ID6, 1, speed);
       break;
 
     case 'x':
@@ -460,8 +490,12 @@ void loop()
 #ifdef DEBUG
       Serial.println(speed);
 #endif
-      SerialServoSetMode(serial_servo, ID1, 1, -speed);
-      SerialServoSetMode(serial_servo, ID2, 1, +speed);
+      SerialServoSetMode(serial_servo, ID2, 1, -speed);
+      SerialServoSetMode(serial_servo, ID4, 1, -speed);
+      SerialServoSetMode(serial_servo, ID6, 1, -speed);
+      SerialServoSetMode(serial_servo, ID1, 1, +speed);
+      SerialServoSetMode(serial_servo, ID3, 1, +speed);
+      SerialServoSetMode(serial_servo, ID5, 1, +speed);
       break;
 
     case 'a':
@@ -475,9 +509,10 @@ void loop()
         front_wheels_angle = front_wheels_angle - 10;
         front_wheels_angle_turn = front_wheels_angle / ANGLE;
       }
-      SerialServoMove(serial_servo, ID3, front_wheels_angle_turn, TURN_TIME);
+      SerialServoMove(serial_servo, ID7, front_wheels_angle_turn, TURN_TIME);
+      SerialServoMove(serial_servo, ID8, front_wheels_angle_turn, TURN_TIME);
       break;
-   
+
     case 'd':
 #ifdef DEBUG
       Serial.println("Rover. Turn right.");
@@ -489,9 +524,10 @@ void loop()
         front_wheels_angle = front_wheels_angle + 10;
         front_wheels_angle_turn = front_wheels_angle / ANGLE;
       }
-      SerialServoMove(serial_servo, ID3, front_wheels_angle_turn, TURN_TIME);
+      SerialServoMove(serial_servo, ID7, front_wheels_angle_turn, TURN_TIME);
+      SerialServoMove(serial_servo, ID8, front_wheels_angle_turn, TURN_TIME);
       break;
- 
+
     case 'q':
 #ifdef DEBUG
       Serial.println("Rover. Stop turning.");
@@ -500,7 +536,7 @@ void loop()
       SerialServoStopMove(serial_servo, ID3);
       SerialServoStopMove(serial_servo, ID4);
       break;
-    
+
     case 'e':
 #ifdef DEBUG
       Serial.println("Rover. Align wheels.");
@@ -508,7 +544,8 @@ void loop()
       // Center wheels
       front_wheels_angle = HALF_ANGLE;
       front_wheels_angle_turn = front_wheels_angle / ANGLE;
-      SerialServoMove(serial_servo, ID3, front_wheels_angle_turn, TURN_TIME);
+      SerialServoMove(serial_servo, ID7, front_wheels_angle_turn, TURN_TIME);
+      SerialServoMove(serial_servo, ID8, front_wheels_angle_turn, TURN_TIME);
       // back_wheels_angle = HALF_ANGLE;
       // back_wheels_angle_turn = back_wheels_angle / ANGLE;
       // SerialServoMove(serial_servo, ID4, back_wheels_angle_turn, TURN_TIME);
@@ -521,7 +558,8 @@ void loop()
       // Set max left angle
       front_wheels_angle = MIN_ANGLE;
       front_wheels_angle_turn = front_wheels_angle / ANGLE;
-      SerialServoMove(serial_servo, ID3, front_wheels_angle_turn, TURN_TIME);
+      SerialServoMove(serial_servo, ID7, front_wheels_angle_turn, TURN_TIME);
+      SerialServoMove(serial_servo, ID8, front_wheels_angle_turn, TURN_TIME);
       // back_wheels_angle = MIN_ANGLE;
       // back_wheels_angle_turn = back_wheels_angle / ANGLE;
       // SerialServoMove(serial_servo, ID4, back_wheels_angle_turn, TURN_TIME);
@@ -534,7 +572,8 @@ void loop()
       // Set max right angle
       front_wheels_angle = MAX_ANGLE;
       front_wheels_angle_turn = front_wheels_angle / ANGLE;
-      SerialServoMove(serial_servo, ID3, front_wheels_angle_turn, TURN_TIME);
+      SerialServoMove(serial_servo, ID7, front_wheels_angle_turn, TURN_TIME);
+      SerialServoMove(serial_servo, ID8, front_wheels_angle_turn, TURN_TIME);
       // back_wheels_angle = MAX_ANGLE;
       // back_wheels_angle_turn = back_wheels_angle / ANGLE;
       // SerialServoMove(serial_servo, ID4, back_wheels_angle_turn, TURN_TIME);
