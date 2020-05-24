@@ -55,6 +55,8 @@ find_package(catkin REQUIRED COMPONENTS
 #   Message2.msg
 # )
 add_message_files(
+  DIRECTORY
+  msg
   FILES
   Teleoperation.msg
   Commands.msg
