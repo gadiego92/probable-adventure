@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   message_generation
+  rostest
 )
 
 ## System dependencies are found with CMake's conventions
@@ -215,3 +216,12 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest)
+  foreach(T
+      test/test_teleop_topic.test
+      test/test_commands_topic.test)
+    add_rostest(${T})
+  endforeach()
+endif()

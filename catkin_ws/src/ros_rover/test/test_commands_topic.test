@@ -1,0 +1,4 @@
+<launch>
+  <node name="commands_publisher" pkg="ros_rover" type="commands_publisher.py" />
+  <test test-name="commands_subscriber_test" pkg="ros_rover" type="commands_subscriber_test.py" />
+</launch>

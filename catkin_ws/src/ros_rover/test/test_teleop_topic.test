@@ -1,0 +1,4 @@
+<launch>
+  <node name="teleop_publisher" pkg="ros_rover" type="teleop_publisher.py" />
+  <test test-name="teleop_subscriber_test" pkg="ros_rover" type="teleop_subscriber_test.py" />
+</launch>
