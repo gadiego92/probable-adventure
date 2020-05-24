@@ -97,3 +97,24 @@ class MotorControllers(object):
         self.corner_to_position([500, 500, 500, 500])
         # Stop drive motors
         self.send_motor_duty([0, 0, 0, 0, 0, 0])
+
+    def get_corner_position(self, servo_id):
+        return self.lw_controller.get_position(servo_id)
+
+    def get_motor_speed(self, servo_id):
+        return self.lw_controller.get_motor_speed(servo_id)
+
+    def get_mode(self, servo_id):
+        return self.lw_controller.get_mode(servo_id)
+
+    def get_status(self, servo_id):
+        return self.lw_controller.is_motor_on(servo_id)
+
+    def move(self, servo_id, position, time=1000):
+        self.lw_controller.move(servo_id, position, time)
+
+    def led_turn_off(self, servo_id):
+        self.lw_controller.led_off(servo_id)
+
+    def led_turn_on(self, servo_id):
+        self.lw_controller.led_on(servo_id)

@@ -317,7 +317,7 @@ class ServoController(object):
 
     def get_position(self, servo_id, timeout=None):
         response = self._query(servo_id, SERVO_POS_READ, timeout=timeout)
-        position = word(response[2], response[3])
+        position = word(response[2][0], response[2][1])
 
         if position > 32767:
             position -= 65536
@@ -327,15 +327,15 @@ class ServoController(object):
     def get_mode(self, servo_id, timeout=None):
         response = self._query(servo_id, SERVO_OR_MOTOR_MODE_READ, timeout=timeout)
 
-        return response[2]
+        return response[2][0]
 
     def get_motor_speed(self, servo_id, timeout=None):
         response = self._query(servo_id, SERVO_OR_MOTOR_MODE_READ, timeout=timeout)
 
-        if response[2] != 1:
+        if response[2][0] != 1:
             return 0
 
-        speed = word(response[4], response[5])
+        speed = word(response[2][2], response[2][3])
 
         if speed > 32767:
             speed -= 65536
