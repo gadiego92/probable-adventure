@@ -55,7 +55,7 @@ if __name__ == "__main__":
     rospy.loginfo("Starting the motor_controller node")
     rospy.on_shutdown(shutdown)
 
-    sub = rospy.Subscriber("/commands_topic", Commands, callback)
+    sub = rospy.Subscriber("commands_topic", Commands, callback)
 
     rate = rospy.Rate(5)
 

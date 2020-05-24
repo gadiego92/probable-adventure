@@ -68,7 +68,7 @@ if __name__ == "__main__":
     # Register client node with the master under keyboard_node name
     rospy.init_node("keyboard_node")
     # Register keyboard_node node as a publisher of rover_motion ROS topic
-    pub = rospy.Publisher("/teleop_topic", Teleoperation, queue_size=1)
+    pub = rospy.Publisher("teleop_topic", Teleoperation, queue_size=1)
 
     status = 0
     target_speed = SPEED_ZERO

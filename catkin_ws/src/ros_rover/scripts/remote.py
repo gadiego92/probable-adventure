@@ -132,7 +132,7 @@ if __name__ == "__main__":
     rospy.init_node("remote_node")
     rospy.loginfo("Starting the remote node")
 
-    sub = rospy.Subscriber("/joy", Joy, callback)
-    pub = rospy.Publisher("/teleop_topic", Teleoperation, queue_size=1)
+    sub = rospy.Subscriber("joy", Joy, callback)
+    pub = rospy.Publisher("teleop_topic", Teleoperation, queue_size=1)
 
     rospy.spin()

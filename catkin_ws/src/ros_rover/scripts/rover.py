@@ -40,8 +40,8 @@ if __name__ == "__main__":
     rospy.init_node("rover_node")
     rospy.loginfo("Starting the rover node")
 
-    pub = rospy.Publisher("/commands_topic", Commands, queue_size=1)
-    joy_sub = rospy.Subscriber("/teleop_topic", Teleoperation, joy_callback)
+    pub = rospy.Publisher("commands_topic", Commands, queue_size=1)
+    joy_sub = rospy.Subscriber("teleop_topic", Teleoperation, joy_callback)
 
     rate = rospy.Rate(10)
 
