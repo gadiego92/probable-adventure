@@ -41,19 +41,18 @@ class MotorControllers(object):
         self.lw_controller = ServoController(
             serial.Serial(serial_port, baud_rate, timeout=1))
 
-        motor_status = 1
+        drive_ticks = [0, 0, 0, 0, 0, 0]
 
-        # Goit trought all servos [1 - 10]
-        for servo_id in range(1, 11):
-            print "Attempting to talk to motor controller ID{0}".format(servo_id)
-            motor_status = motor_status & self.lw_controller.is_motor_on(servo_id)
-            # DEBUG
-            print "Motor ID{0} is {1}".format(servo_id, motor_status)
-
-        if motor_status != 0:
-            print "[Motor__init__] Sucessfully connected to Lewansoul motor controllers"
-        else:
-            raise Exception("Unable to establish connection to Lewansoul motor controllers")
+        self.lw_controller.set_motor_mode(MOTOR_LEFT_FRONT, drive_ticks[0])
+        self.lw_controller.set_motor_mode(MOTOR_LEFT_MIDDLE, drive_ticks[1])
+        self.lw_controller.set_motor_mode(MOTOR_LEFT_BACK, drive_ticks[2])
+        self.lw_controller.set_motor_mode(MOTOR_RIGHT_FRONT, drive_ticks[3])
+        self.lw_controller.set_motor_mode(MOTOR_RIGHT_MIDDLE, drive_ticks[4])
+        self.lw_controller.set_motor_mode(MOTOR_RIGHT_BACK, drive_ticks[5])
+        self.lw_controller.set_servo_mode(SERVO_LEFT_FRONT)
+        self.lw_controller.set_servo_mode(SERVO_RIGHT_FRONT)
+        self.lw_controller.set_servo_mode(SERVO_LEFT_BACK)
+        self.lw_controller.set_servo_mode(SERVO_RIGHT_BACK)
 
     def corner_to_position(self, corner_ticks):
         """
