@@ -56,8 +56,6 @@ class Robot(object):
         elif temp > e_max:
             temp = e_max
 
-        print(temp, e_max, e_min, deg)
-
         return temp
 
     def calculate_velocity(self, v, r):
@@ -155,11 +153,9 @@ class Robot(object):
 
         if radius < 0:
             # Turn Left
-            print(-ang8, -ang7, ang10, ang9)
             angles = [-ang8, -ang7, ang10, ang9]
         else:
             # Turn Right
-            print(ang7, ang8, -ang9, -ang10)
             angles = [ang7, ang8, -ang9, -ang10]
 
         return angles
@@ -175,8 +171,6 @@ class Robot(object):
 
         for i in range(4):
             tick.append(self.deg_to_tick(tar_enc[i], self.enc_min, self.enc_max))
-
-        print tick
 
         return tick
 
